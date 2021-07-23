@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require('express');
-const socketio = require('socket.io');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -11,8 +10,6 @@ const http = require('http')
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 const app = express();
-const server = http.createServer(app);
-const io = socketio(server)
 
 const corsOptions ={
   origin:'http://localhost:3000', 
@@ -40,8 +37,6 @@ mongoose.connect(connection, {
     useUnifiedTopology: true,
     useFindAndModify: false
 });
-
-io.on('connection', socket => { console.log('New socket connection') })
 
 const userRoutes = require('./routes/userRoutes');
 
@@ -80,4 +75,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-server.listen(5000, () => console.log('Listening on port 5000!'))
+app.listen(5000, () => console.log('Listening on port 5000!'))

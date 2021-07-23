@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "./Header";
 import MatchButton from './MatchButton'
 import axios from "axios";
+import { UserContext } from "../Context/UserContext";
 
-
-
- 
 export default function MessageBoard () {
 
   const { id } = useParams();
@@ -14,6 +12,9 @@ export default function MessageBoard () {
   const api = `http://localhost:5000/user/account/${id}`;
 
   const [ matches, setMatches ] = useState({});
+  const [ conversations, setConversations ] = useState([])
+
+  const { userState, setUserState } = useContext(UserContext);
 
   const data = localStorage.getItem("user");
   console.log(JSON.parse(data) ,"data")
@@ -28,18 +29,21 @@ export default function MessageBoard () {
         },
       })
       .then((res) => {
+        console.log(res.data.conversation, 'conversation')
+        setConversations(res.data.conversation)
         setMatches(res.data.user.matches);
       });
   }, []);
 
+
   const matchesState = Array.from(matches);
+  console.log(matchesState, "Matches state")
+  console.log(conversations)
 
     return (
       <div>
         <Header />
         <div className="Message-board-container" >
-
-
           {matchesState.length === 0 ? (
             <div>
               <div className="No-matches-container">
@@ -55,7 +59,7 @@ export default function MessageBoard () {
             </div>
           ) : (
             matchesState.map((person, index) => {
-              return <div key={index}><MatchButton person={person}/></div>
+              return <div className="Message-item" key={index}><MatchButton conversations={conversations} person={person}/></div>
             })
           )}
         </div>

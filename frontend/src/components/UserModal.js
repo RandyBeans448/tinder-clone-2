@@ -26,7 +26,9 @@ export default function UserModal({open, setOpen,  handleClose, person}) {
                 <div className="Modal">
                 <div alt={person.firstName} className="Modal-img" style={{backgroundImage: `url(http://localhost:5000/${person.path})`, backgroundSize: 'cover'}}></div> 
                 <h3  className="Modal-name-age">{person.firstName}, {person.age}</h3> 
-                <TextField id="outlined-basic" label="Description" multiline rows={4} variant="outlined" value={person.description}></TextField>
+                <div className="Modal-desc">
+                <TextField id="outlined-full-width" label="Description" multiline rows={4} variant="outlined" value={person.description}></TextField>
+                </div>
                 </div>
                 <div className="Background"></div>
                 </div>

@@ -32,6 +32,8 @@ export default function SwipePage() {
 
   const api = `http://localhost:5000/user/match/${id}`;
 
+  const conversationApi = `http://localhost:5000/user/conversation/${id}`;
+
   const alreadyRemoved = [];
 
   const state = results;
@@ -48,6 +50,20 @@ export default function SwipePage() {
       .then((res) => {
         setResults(res.data.user);
         console.log(results, "Results");
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get(conversationApi, {
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
+      })
+      .then((res) => {
+        console.log(res.data, "Conversation")
       });
   }, []);
 
@@ -92,7 +108,7 @@ export default function SwipePage() {
           const resultRemove = results.splice(person);
           setResults(resultRemove);
           setUserState(data);
-          console.log(userState)
+          console.log(userState, "user state")
         })
         .catch((err) => console.log(err));
     } else if (direction === "right") {
@@ -110,7 +126,6 @@ export default function SwipePage() {
         )
         .then((res) => {
           if (res) {
-            renderMatchModal();
             const data = res.data.updateObject;
             console.log(data, "Beanz");
           }

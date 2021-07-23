@@ -12,9 +12,9 @@ export default function Header() {
 
     return ( 
     <div className="Header"> 
-    <Link to={`/user/account/${id}`}><IconButton><PersonIcon className="Header-icon" /></IconButton></Link>
+    <Link to={`/user/account/${id}`}><IconButton><PersonIcon style={{ color: 'red' }} className="Header-icon" /></IconButton></Link>
     <Link to={`/user/match/${id}`}><IconButton><img className="Header-logo" alt="Tinder" src="https://www.logo.wine/a/logo/Tinder_(app)/Tinder_(app)-Flame-Logo.wine.svg" height="100px"></img></IconButton></Link>
-    <Link to={`/user/message-board/${id}`}><IconButton><MessageIcon className="Header-icon"/></IconButton></Link>
+    <Link to={`/user/message-board/${id}`}><IconButton><MessageIcon style={{ color: 'red' }} className="Header-icon"/></IconButton></Link>
     </div> 
     );
 }

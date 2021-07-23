@@ -36,7 +36,7 @@ const App = () => {
         <Route path='/user/match/:id' component={SwipePage}/>
         <Route path='/user/create-account' component={CreateAccount}/> 
         <Route path='/user/message-board/:id' component={MessageBoard}/> 
-        <Route path='/user/chatroom/:id/:userid' component={ChatRoom}/> 
+        <Route path='/user/conversation/:id/:receiverId/:conversationId' component={ChatRoom}/> 
         </UserContext.Provider>
       </Switch>
     </div>
@@ -51,8 +51,6 @@ export default App
 To do Listen - 
 
   1. Include a MATCH pop up when you get a match.
-
-  2. When tinder card clicked modal behind is shown not current.
 
   3. Create the messenger app.
 

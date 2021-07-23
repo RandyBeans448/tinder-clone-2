@@ -9,23 +9,28 @@ import axios from "axios";
 import { UserContext } from "../Context/UserContext";
 
 export default function AccountSettings() {
-  const { id } = useParams();
 
   const history = useHistory();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [sexualPreference, setSexualPreference] = useState("");
-  const [description, setDescription] = useState("");
-
-  const { userState } = useContext(UserContext);
-
-  console.log(userState);
+  const { userState, setUserState } = useContext(UserContext);
+  const [firstName, setFirstName] = useState(userState.firstName);
+  const [lastName, setLastName] = useState(userState.lastName);
+  const [description, setDescription] = useState(userState.description);
+  const [errors, setErrors] = useState([])
 
   const submit = () => {
+
+    const data = {
+      firstName: firstName,
+      lastName: lastName,
+      description: description,
+    };
+
+    console.log(data, "data")
+
     axios
       .patch(
-        `http://localhost:5000/user/settings/${id}`,
+        `http://localhost:5000/user/settings/${userState._id}`, data,
         {
           headers: {
             Authorization: localStorage.getItem("jwt"),
@@ -33,24 +38,17 @@ export default function AccountSettings() {
             "Cache-Control": "no-cache",
           },
         },
-        {
-          firstName: firstName,
-          lastName: lastName,
-          sexualPreference: sexualPreference,
-          description: description,
-        }
       )
       .then((res) => {
-        // const data = res.data.updateObject;
+        console.log(res.data)
         history.push({
-          pathname: `/user/account/${id}`,
+          pathname: `/user/account/${userState._id}`,
         });
       })
-      .catch((err) => console.log(err));
+      .catch(error => setErrors(error.response.data.error));
   };
 
   const handleSubmit = (event) => {
-    console.log(id);
     event.preventDefault();
     submit();
   };
@@ -61,6 +59,7 @@ export default function AccountSettings() {
       <div>
         <h1>Settings</h1>
       </div>
+      <p className="Errors">{errors}</p>
       <form onSubmit={handleSubmit}>
         <input
           id="firstName"
@@ -68,7 +67,7 @@ export default function AccountSettings() {
           type="firstName"
           onChange={(e) => setFirstName(e.target.value)}
           className="Sign-up-input"
-          defaultValue={userState.firstName}
+          defaultValue={firstName}
         ></input>
         <input
           id="lastName"
@@ -76,15 +75,7 @@ export default function AccountSettings() {
           type="lastName"
           onChange={(e) => setLastName(e.target.value)}
           className="Sign-up-input"
-          defaultValue={userState.lastName}
-        ></input>
-        <input
-          id="sexualPreference"
-          name="sexualPreference"
-          type="sexualPreference"
-          onChange={(e) => setSexualPreference(e.target.value)}
-          className="Sign-up-input"
-          defaultValue={userState.sexualPreference}
+          defaultValue={lastName}
         ></input>
         <textarea
           id="description"
@@ -92,7 +83,7 @@ export default function AccountSettings() {
           type="description"
           onChange={(e) => setDescription(e.target.value)}
           className="Sign-up-text"
-          defaultValue={userState.description}
+          defaultValue={description}
         ></textarea>
         <div className="Submit-box">
           <div className="Submit-sub-box">
@@ -107,7 +98,7 @@ export default function AccountSettings() {
           </div>
           <div className="Submit-sub-box">
             <p>Cancel</p>
-            <Link to={`/user/account/${id}`}>
+            <Link to={`/user/account/${userState._id}`}>
               <IconButton>
                 <HighlightOffIcon fontSize="large"></HighlightOffIcon>
               </IconButton>
