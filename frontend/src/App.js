@@ -52,10 +52,10 @@ To do Listen -
 
   1. Include a MATCH pop up when you get a match.
 
-  3. Create the messenger app.
+  2. Filter searches better for sexualties.
 
-  4. Filter searches better for  sexualties.
+  3. Filter out users dpending if they have already been liked or disliked (Do this last).
 
-  5. Filter out users dpending if they have already been liked or disliked (Do this last).
+  4. Rebuild the UI
 
 */

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useContext, useRef } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Header from "./Header";
 import axios from "axios";
@@ -8,8 +8,8 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import CancelIcon from "@material-ui/icons/Cancel";
 
 import { ClassicSpinner } from "react-spinners-kit";
-import { green } from '@material-ui/core/colors';
-import { red } from '@material-ui/core/colors';
+import { green } from "@material-ui/core/colors";
+import { red } from "@material-ui/core/colors";
 
 import TinderCard from "react-tinder-card";
 import UserModal from "./UserModal";
@@ -25,14 +25,11 @@ export default function SwipePage() {
   const [swipeDirection, setDirection] = useState("");
   const [open, setOpen] = useState(false);
 
-
   const { userState, setUserState } = useContext(UserContext);
 
   const { id } = useParams();
 
   const api = `http://localhost:5000/user/match/${id}`;
-
-  const conversationApi = `http://localhost:5000/user/conversation/${id}`;
 
   const alreadyRemoved = [];
 
@@ -49,21 +46,6 @@ export default function SwipePage() {
       })
       .then((res) => {
         setResults(res.data.user);
-        console.log(results, "Results");
-      });
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(conversationApi, {
-        headers: {
-          Authorization: localStorage.getItem("jwt"),
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-        },
-      })
-      .then((res) => {
-        console.log(res.data, "Conversation")
       });
   }, []);
 
@@ -80,7 +62,6 @@ export default function SwipePage() {
   );
 
   const renderMatchModal = () => {
-    console.log("Match modal");
     return <MatchModal />;
   };
 
@@ -88,7 +69,6 @@ export default function SwipePage() {
     alreadyRemoved.push(person);
 
     setDirection(direction);
-    console.log(direction);
 
     if (direction === "left") {
       axios
@@ -108,7 +88,6 @@ export default function SwipePage() {
           const resultRemove = results.splice(person);
           setResults(resultRemove);
           setUserState(data);
-          console.log(userState, "user state")
         })
         .catch((err) => console.log(err));
     } else if (direction === "right") {
@@ -127,7 +106,6 @@ export default function SwipePage() {
         .then((res) => {
           if (res) {
             const data = res.data.updateObject;
-            console.log(data, "Beanz");
           }
         })
         .catch((err) => console.log(err));
@@ -174,14 +152,14 @@ export default function SwipePage() {
       <div className="Board">
         {results.length === 0 ? (
           <div>
-          <div className="Loading-container">
-            <ClassicSpinner size={60} color="#686769" />
-          </div>
+            <div className="Loading-container">
+              <ClassicSpinner size={60} color="#686769" />
+            </div>
           </div>
         ) : (
           results.map((person, index) => {
             return (
-              <div className="Stack">
+              <div key={person._id} className="Stack">
                 <TinderCard
                   person={person}
                   className="swipe"
@@ -210,8 +188,6 @@ export default function SwipePage() {
                         key={person._id}
                         handleOpen={handleOpen}
                         handleClose={handleClose}
-                        // isOpen={isOpen}
-                        // setIsOpen={setIsOpen}
                         open={open}
                         setOpen={setOpen}
                         person={person}
@@ -226,21 +202,38 @@ export default function SwipePage() {
         )}
       </div>
       {swipeDirection === "right" ? <LikedModal></LikedModal> : <div></div>}
-      {swipeDirection === "left" ? <DislikedModal></DislikedModal> : <div></div>}
-      <div className="Submit-button-container">
-        <button className="Submit-button" onClick={() => swipe("left")}>
-          <IconButton>
-            <CancelIcon style={{ color: red[500] }} className="Header-icon" fontSize="large" />
-          </IconButton>
-        </button>
-        <button className="Submit-button" onClick={() => swipe("right")}>
-          <IconButton>
-            <FavoriteIcon style={{ color: green[500] }} className="Header-icon" fontSize="large" />
-          </IconButton>
-        </button>
+      {swipeDirection === "left" ? (
+        <DislikedModal></DislikedModal>
+      ) : (
+        <div></div>
+      )}
+      <div className="Submit-button-wrapper">
+        <div className="Submit-button-container">
+          <button className="Left-button" onClick={() => swipe("left")}>
+            <IconButton>
+              <CancelIcon
+                style={{ color: red[500] }}
+                className="Header-icon"
+                fontSize="large"
+              />
+            </IconButton>
+          </button>
+        </div>
+        <div className="Submit-button-container">
+          <button className="Right-button" onClick={() => swipe("right")}>
+            <IconButton>
+              <FavoriteIcon
+                style={{ color: green[500] }}
+                className="Header-icon"
+                fontSize="large"
+              />
+            </IconButton>
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
 
 

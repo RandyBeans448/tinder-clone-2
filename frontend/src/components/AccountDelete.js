@@ -8,7 +8,6 @@ export default function AccountDelete() {
   const history = useHistory();
 
   const { id } = useParams();
-  console.log(id);
 
   const api = `http://localhost:5000/user/delete/${id}`;
 

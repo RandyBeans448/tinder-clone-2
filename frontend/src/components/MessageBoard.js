@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "./Header";
 import MatchButton from './MatchButton'
 import axios from "axios";
-import { UserContext } from "../Context/UserContext";
 
 export default function MessageBoard () {
 
@@ -13,11 +12,6 @@ export default function MessageBoard () {
 
   const [ matches, setMatches ] = useState({});
   const [ conversations, setConversations ] = useState([])
-
-  const { userState, setUserState } = useContext(UserContext);
-
-  const data = localStorage.getItem("user");
-  console.log(JSON.parse(data) ,"data")
 
   useEffect(() => {
     axios
@@ -29,16 +23,12 @@ export default function MessageBoard () {
         },
       })
       .then((res) => {
-        console.log(res.data.conversation, 'conversation')
         setConversations(res.data.conversation)
         setMatches(res.data.user.matches);
       });
   }, []);
 
-
   const matchesState = Array.from(matches);
-  console.log(matchesState, "Matches state")
-  console.log(conversations)
 
     return (
       <div>
@@ -49,6 +39,7 @@ export default function MessageBoard () {
               <div className="No-matches-container">
                 <div className="No-matches-div">
                 <img 
+                     alt="No-matches"
                      width="250px"
                      height="300px" 
                      src="/noMatches.jpeg" />

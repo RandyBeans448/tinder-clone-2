@@ -1,72 +1,68 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import { format } from "timeago.js";
 
 import Header from "./Header";
 
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
+import DeleteIcon from "@material-ui/icons/Delete";
 import SendIcon from "@material-ui/icons/Send";
+import IconButton from "@material-ui/core/IconButton";
 
 import { io } from "socket.io-client";
 import axios from "axios";
 
-import { UserContext } from "../Context/UserContext";
-
 export default function ChatRoom() {
+  const local = localStorage.getItem("user");
+  const localUser = JSON.parse(local);
 
-  const [match, setMatch] = useState({});
+  const [match, setMatch] = useState();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState({});
-
-  const { userState, setUserState } = useContext(UserContext);
-
-  const { receiverId } = useParams()
+  const [errors, setErrors] = useState([]);
 
   const socket = useRef();
   const scrollRef = useRef();
 
   const history = useHistory();
 
+  const { receiverId } = useParams();
   const { conversationId } = useParams();
   const { id } = useParams();
 
-  const api = `http://localhost:5000/user/messenger/${userState._id}/${receiverId}/${conversationId}`;
+  const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
+
+  const matchId = receiverId;
 
   useEffect(() => {
+    setMatch(matchId);
+    console.log(match, "match");
     socket.current = io("ws://localhost:7000");
-    console.log("start of arrival");
-    socket.current.on("getMessage", data => {
-      console.log(data, "data");
-      console.log(data.senderId, data.message)
+
+    socket.current.on("getMessage", (data) => {
       const arrMess = {
         sender: data.senderId,
         message: data.message,
         createdAt: Date.now(),
       };
-      console.log(arrMess, "arrMess")
       setArrivalMessage(arrMess);
-      console.log(arrivalMessage, "arr message");
       setMessages((prev) => [...prev, arrivalMessage]);
-      console.log(messages, "messages with arr");
       getMessages();
     });
-  },[]);
+  }, []);
 
-  useEffect(()=> {
-
-    socket.current.emit("addUser", userState._id);
-    socket.current.on("getUsers", users => {
+  useEffect(() => {
+    socket.current.emit("addUser", localUser._id);
+    socket.current.on("getUsers", (users) => {
       console.log(users, "users");
     });
 
     socket.current.on("disconnect", () => {
       console.log("a user has disconnected");
-    })
-
-  }, [id])
+    });
+  }, [id]);
 
   const getMessages = async () => {
     axios
@@ -96,7 +92,7 @@ export default function ChatRoom() {
         api,
         {
           conversationId: conversationId,
-          sender: userState._id,
+          sender: localUser._id,
           message: newMessage,
         },
         {
@@ -117,15 +113,16 @@ export default function ChatRoom() {
     submit();
 
     socket.current.emit("sendMessage", {
-      senderId: userState._id,
+      senderId: localUser._id,
       receiverId: receiverId,
-      message: newMessage
+      message: newMessage,
     });
     getMessages();
   };
 
   const unmatch = (event) => {
     event.preventDefault();
+    console.log("Starting");
     axios
       .patch(
         api,
@@ -139,11 +136,10 @@ export default function ChatRoom() {
         }
       )
       .then((res) => {
-        history.push({ pathname: `/user/account/${userState._id}` });
-        console.log(res.data);
+        history.push({ pathname: `/user/account/${localUser._id}` });
       })
       .catch((errors) => {
-        console.log("Course not deleted", errors);
+        setErrors(errors);
       });
   };
 
@@ -151,6 +147,16 @@ export default function ChatRoom() {
     <div>
       <div>
         <Header />
+        <Button
+          variant="outlined"
+          color="secondary"
+          className="Unmatch-button"
+          onClick={unmatch}
+        
+        >
+          Unmatch
+        </Button>
+        <p> {errors}</p>
         <div className="Chat-banner">
           <div className="Chat-container">
             {/* <img
@@ -158,39 +164,36 @@ export default function ChatRoom() {
           src={`http://localhost:5000/${match.path}`}
           alt=""
         /> */}
-            <button onClick={unmatch} className="Chat-unmatch-button">
-              <IconButton>
-                <HighlightOffIcon></HighlightOffIcon>
-              </IconButton>
-            </button>
           </div>
         </div>
         <div className="Chat-box-wrapper">
           <div className="Chat-box">
             <div className="Chat-messages-wrapper">
-            {!messages ? (
-              <p> Start chatting </p>
-            ) : (
-              messages.map((message, index) => {
-                return (
-                  <div key={index} ref={scrollRef}>
-                  <div className="Dialog-box-container">
-                    <p className="Dialog-box-message">{message.message}</p>
-                  </div>
-                   <p className="Dialog-box-date">{format(message.createdAt)}</p>
-                   </div>
-                );
-              })
-            )}
+              {!messages ? (
+                <p> Start chatting </p>
+              ) : (
+                messages.map((message, index) => {
+                  return (
+                    <div key={index} ref={scrollRef}>
+                      <div className="Dialog-box-container">
+                        <p className="Dialog-box-message">{message.message}</p>
+                      </div>
+                      <p className="Dialog-box-date">
+                        {format(message.createdAt)}
+                      </p>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
         <div className="Chat-area-wrapper">
-          <textarea
+          <input
             onChange={(e) => setNewMessage(e.target.value)}
             value={newMessage}
             className="Chat-area"
-          ></textarea>
+          ></input>
           <button onClick={handleSubmit} className="Chat-send">
             <IconButton>
               <SendIcon></SendIcon>

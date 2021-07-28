@@ -1,22 +1,22 @@
-import React, { useState, useContext } from "react";
-import { Link, useParams, useHistory } from "react-router-dom";
+import React, { useState, } from "react";
+import { Link,  useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import Header from "./Header";
 import axios from "axios";
 
-import { UserContext } from "../Context/UserContext";
-
 export default function AccountSettings() {
 
   const history = useHistory();
 
-  const { userState, setUserState } = useContext(UserContext);
-  const [firstName, setFirstName] = useState(userState.firstName);
-  const [lastName, setLastName] = useState(userState.lastName);
-  const [description, setDescription] = useState(userState.description);
-  const [errors, setErrors] = useState([])
+  const local = localStorage.getItem("user");
+  const localUser = JSON.parse(local);
+
+  const [firstName, setFirstName] = useState(localUser.firstName);
+  const [lastName, setLastName] = useState(localUser.lastName);
+  const [description, setDescription] = useState(localUser.description);
+  const [errors, setErrors] = useState([]);
 
   const submit = () => {
 
@@ -26,11 +26,9 @@ export default function AccountSettings() {
       description: description,
     };
 
-    console.log(data, "data")
-
     axios
       .patch(
-        `http://localhost:5000/user/settings/${userState._id}`, data,
+        `http://localhost:5000/user/settings/${localUser._id}`, data,
         {
           headers: {
             Authorization: localStorage.getItem("jwt"),
@@ -42,7 +40,7 @@ export default function AccountSettings() {
       .then((res) => {
         console.log(res.data)
         history.push({
-          pathname: `/user/account/${userState._id}`,
+          pathname: `/user/account/${localUser._id}`,
         });
       })
       .catch(error => setErrors(error.response.data.error));
@@ -98,7 +96,7 @@ export default function AccountSettings() {
           </div>
           <div className="Submit-sub-box">
             <p>Cancel</p>
-            <Link to={`/user/account/${userState._id}`}>
+            <Link to={`/user/account/${localUser._id}`}>
               <IconButton>
                 <HighlightOffIcon fontSize="large"></HighlightOffIcon>
               </IconButton>

@@ -37,8 +37,11 @@ export default function Login () {
   }
 
   return (
-    <div >
-        <h1>tinder</h1>
+    <div>
+    <div className="Login-background"/>
+    <div className="Login">
+    <div className="Login-wrapper">
+      <h1 className="Login-header">Swipe match</h1>
       <p className="Errors">{errors}</p>
       <form onSubmit={handleSubmit}>
         <input
@@ -61,10 +64,12 @@ export default function Login () {
         <button type="submit" className="Login-button">Submit</button>
         </div>
       </form>
-      <p>Don't have a user account?
+      <p className="Login-p" >Don't have a user account?
         <Link to="/user/create-account" > Click here </Link>
         to sign up!
       </p>
+    </div>
+    </div>
     </div>
   );
 }

@@ -88,6 +88,11 @@ const recursive = async (match, user, req, res, err, next) => {
   }
 }; 
 
+
+/*
+Login account
+*/
+
 router.post( "/login", asyncHandler(async (req, res, err) => {
 
     const userBody = req.body;
@@ -124,6 +129,10 @@ router.post( "/login", asyncHandler(async (req, res, err) => {
     }
   })
 );
+
+/*
+Create user account
+*/
 
 router.post( "/user/create-account", upload.single("file"), [
     check("firstName")
@@ -204,6 +213,9 @@ router.post( "/user/create-account", upload.single("file"), [
   })
 );
 
+/*
+Authenticate user
+*/
 
 function authenticateUser(req, res, next) {
 
@@ -311,7 +323,10 @@ router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, ne
   })
 );
 
-//updates user account
+/*
+updates user account
+*/
+
 router.patch("/user/settings/:id",[
     check("firstName")
       .exists({ checkNull: true, checkFalsy: true })
@@ -399,19 +414,23 @@ router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res,
 Unmatch from user
 */
 
-router.patch("/user/messenger/:id/:conversationId", authenticateUser, asyncHandler(async (req, res, next, err) => {
+router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, err) => {
 
 
   if (err) {
     res.status(500).json(err);
   } else {
+
+    console.log("starting")
     const user = await User.findOne({ _id: req.params.id });
 
-    await User.findOneAndUpdate( { _id: req.params.id }, { $pull: { matches: { _id: new ObjectID(req.body.removeMatch._id) } } }, function(err, data) {
+    console.log(user)
+    console.log(req.body.removeMatch)
+    await User.findOneAndUpdate( { _id: req.params.id }, { $pull: { matches: { _id: new ObjectID(req.body.removeMatch) } } }, function(err, data) {
       console.log(err, data);
     });
   
-    await User.findOneAndUpdate( { _id: req.body.removeMatch._id }, { $pull: { matches: { _id: new Object(user._id) } } }, function(err, data) {
+    await User.findOneAndUpdate( { _id: new ObjectID(req.body.removeMatch) }, { $pull: { matches: { _id: new Object(user._id) } } }, function(err, data) {
       console.log(err, data);
     });
   
