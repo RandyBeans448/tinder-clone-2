@@ -41,7 +41,7 @@ export default function Login () {
     <div className="Login-background"/>
     <div className="Login">
     <div className="Login-wrapper">
-      <h1 className="Login-header">Swipe match</h1>
+      <h1 className="Login-header">Tinder clone</h1>
       <p className="Errors">{errors}</p>
       <form onSubmit={handleSubmit}>
         <input

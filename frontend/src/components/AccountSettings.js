@@ -1,13 +1,11 @@
-import React, { useState, } from "react";
-import { Link,  useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
 import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment'
-import CardContent from '@material-ui/core/CardContent';
+import TextField from "@material-ui/core/TextField";
+import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -16,7 +14,6 @@ import Header from "./Header";
 import axios from "axios";
 
 export default function AccountSettings() {
-
   const history = useHistory();
 
   const local = localStorage.getItem("user");
@@ -28,7 +25,6 @@ export default function AccountSettings() {
   const [errors, setErrors] = useState([]);
 
   const submit = () => {
-
     const data = {
       firstName: firstName,
       lastName: lastName,
@@ -36,23 +32,20 @@ export default function AccountSettings() {
     };
 
     axios
-      .patch(
-        `http://localhost:5000/user/settings/${localUser._id}`, data,
-        {
-          headers: {
-            Authorization: localStorage.getItem("jwt"),
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-          },
+      .patch(`http://localhost:5000/user/settings/${localUser._id}`, data, {
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
         },
-      )
+      })
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         history.push({
           pathname: `/user/account/${localUser._id}`,
         });
       })
-      .catch(error => setErrors(error.response.data.error));
+      .catch((error) => setErrors(error.response.data.error));
   };
 
   const handleSubmit = (event) => {
@@ -65,24 +58,70 @@ export default function AccountSettings() {
       <Header />
       <p className="Errors">{errors}</p>
       <div className="Account-page-container">
-      <Card className="Account-page-wrapper">
-        <CardContent>
-      <Typography gutterBottom variant="h5" component="h1">
-               Settings
-              </Typography>
-              <InputLabel htmlFor="standard-adornment-amount">Fist name</InputLabel>
-          <Input
-            id="standard-adornment-amount"
-            // value={values.amount}
-            // onChange={handleChange('amount')}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-          />
-              </CardContent>
-      </Card>
-      </div>
-      <h2>Settings</h2>
       <form onSubmit={handleSubmit}>
-      <p>First name</p>
+        <Card className="Settings-page-wrapper">
+          <div className="Settings-div">
+          <Typography gutterBottom variant="h5" component="h1" className="Settings-title">
+            Settings
+          </Typography>
+          <CardContent>
+            <div className="Settings-container">
+              <TextField
+                id="standard-read-only-input"
+                label="First name"
+                onChange={(e) => setFirstName(e.target.value)}
+                defaultValue={firstName}
+                className="Settings-input"
+              />
+            </div>
+            <div className="Settings-container">
+              <TextField
+                id="standard-read-only-input"
+                label="Last name"
+                onChange={(e) => setLastName(e.target.value)}
+                defaultValue={lastName}
+                className="Settings-input"
+              />
+            </div>
+            <div className="Settings-container-desc">
+            <TextField
+          id="filled-multiline-static"
+          label="Description"
+          multiline
+          rows={6}
+          defaultValue={description}
+          className="Settings-textarea"
+          variant="filled"
+        />
+        </div>
+        <div className="Settings-sub-box">
+          <div className="Left-button">
+            <p className="Settings-p">Submit</p>
+            <button type="submit" className="Submit-button">
+              <IconButton>
+                <CheckCircleIcon style={{ color: 'white' }} className="Settings-cancel">
+                  <button></button>
+                </CheckCircleIcon>
+              </IconButton>
+            </button>
+          </div>
+          <div className="Right-button">
+            <p className="Settings-p">Cancel</p>
+            <Link to={`/user/account/${localUser._id}`}>
+              <IconButton >
+                <HighlightOffIcon style={{ color: 'white' }} className="Settings-cancel"></HighlightOffIcon>
+              </IconButton>
+            </Link>
+          </div>
+          </div>
+          </CardContent>
+          </div>
+        </Card>
+        </form>
+      </div>
+      {/* <h2>Settings</h2>
+      <form onSubmit={handleSubmit}>
+        <p>First name</p>
         <input
           id="firstName"
           name="firstName"
@@ -128,7 +167,7 @@ export default function AccountSettings() {
             </Link>
           </div>
         </div>
-      </form>
+      </form> */}
     </div>
   );
 }
