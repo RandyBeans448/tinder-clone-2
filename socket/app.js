@@ -11,17 +11,16 @@ const addUser = (userId, socketId) => {
         users.push({ userId, socketId });
 };
 
+const getUser = (userId) => {
+    return users.find((user) => user.userId === userId);
+  };
+  
 const removeUser = (socketId) => {
     for (let i = 0; i < users.length; i ++) {
         console.log(users.socketId);
     }
     return users = users.filter(user => user.socketId !== socketId);
 };
-
-const getUser = (userId) => {
-    console.log(users, "users");
-    return users.find(user => user.userId === userId);
-}
 
 io.on("connection", (socket) => {
 
@@ -33,17 +32,13 @@ io.on("connection", (socket) => {
     });
 
     //Send and get message
-    socket.on("sendMessage", ({senderId, receiverId, message}) => {
+    socket.on("sendMessage", ({ senderId, receiverId, message }) => {
         const user = getUser(receiverId);
-        console.log(senderId, receiverId, message);
-        console.log(user,"user");
-        // console.log(user.socketId, "socket");
         io.to(user.socketId).emit("getMessage", {
-            senderId,
-            message,
+          senderId,
+          message,
         });
-
-    })
+      });
 
     //When a user disconnects from server
     socket.on("disconnect", () => {
@@ -52,3 +47,5 @@ io.on("connection", (socket) => {
     });
 
 });
+
+//not getting the reciver id to send message, getUser function not working properly

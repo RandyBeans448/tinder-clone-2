@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import { format } from "timeago.js";
@@ -6,7 +6,6 @@ import { format } from "timeago.js";
 import Header from "./Header";
 
 import Button from "@material-ui/core/Button";
-import DeleteIcon from "@material-ui/icons/Delete";
 import SendIcon from "@material-ui/icons/Send";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -30,57 +29,56 @@ export default function ChatRoom() {
 
   const { receiverId } = useParams();
   const { conversationId } = useParams();
-  const { id } = useParams();
 
   const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
 
-  const matchId = receiverId;
+  const callBack = useCallback(() => {
+    const getMessages = async () => {
+      axios
+        .get(api, {
+          headers: {
+            Authorization: localStorage.getItem("jwt"),
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+          },
+        })
+        .then((res) => {
+          setMessages(res.data);
+        });
+    };
+    getMessages();
+  }, [api]);
 
   useEffect(() => {
-    setMatch(matchId);
+    setMatch(receiverId);
     console.log(match, "match");
     socket.current = io("ws://localhost:7000");
-
     socket.current.on("getMessage", (data) => {
+      console.log(data);
       const arrMess = {
         sender: data.senderId,
         message: data.message,
         createdAt: Date.now(),
       };
+      console.log("cunt");
       setArrivalMessage(arrMess);
+      console.log(arrivalMessage, "arrivalMessage");
       setMessages((prev) => [...prev, arrivalMessage]);
-      getMessages();
+      console.log(messages, "Messages");
+      callBack();
     });
-  }, []);
+  }, [receiverId, match, arrivalMessage, messages, callBack]);
 
   useEffect(() => {
     socket.current.emit("addUser", localUser._id);
     socket.current.on("getUsers", (users) => {
-      console.log(users, "users");
+      callBack();
     });
 
     socket.current.on("disconnect", () => {
       console.log("a user has disconnected");
     });
-  }, [id]);
-
-  const getMessages = async () => {
-    axios
-      .get(api, {
-        headers: {
-          Authorization: localStorage.getItem("jwt"),
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-        },
-      })
-      .then((res) => {
-        setMessages(res.data);
-      });
-  };
-
-  useEffect(() => {
-    getMessages();
-  }, []);
+  }, [callBack, localUser._id]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,20 +102,25 @@ export default function ChatRoom() {
         }
       )
       .then((res) => {
-        getMessages();
+        console.log(res.data);
+        const arrMessage = res.data.message;
+        setArrivalMessage(arrMessage);
+        console.log(arrivalMessage, "arrmess");
+        callBack();
       });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     submit();
-
     socket.current.emit("sendMessage", {
       senderId: localUser._id,
       receiverId: receiverId,
       message: newMessage,
     });
-    getMessages();
+    socket.current.on("getMessage", (data) => {
+      console.log(data, "data");
+    });
   };
 
   const unmatch = (event) => {
@@ -152,19 +155,12 @@ export default function ChatRoom() {
           color="secondary"
           className="Unmatch-button"
           onClick={unmatch}
-        
         >
           Unmatch
         </Button>
         <p> {errors}</p>
         <div className="Chat-banner">
-          <div className="Chat-container">
-            {/* <img
-          className="Account-page-img"
-          src={`http://localhost:5000/${match.path}`}
-          alt=""
-        /> */}
-          </div>
+          <div className="Chat-container"></div>
         </div>
         <div className="Chat-box-wrapper">
           <div className="Chat-box">

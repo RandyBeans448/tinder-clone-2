@@ -498,7 +498,6 @@ position: relative;
 
 .Message-div {
   display: flex;
-  /* flex-flow: row wrap; */
   justify-content: space-between;
   border: none ;
   border-radius: 10px;
@@ -644,6 +643,18 @@ color: white;
   color: grey;
 }
 
+/* Settings */
+
+.Submit-box {
+  display: flex;
+  justify-content: center;
+}
+
+.Submit-button {
+  background: none;
+  border: none;
+}
+ 
 @media (min-width: 100px) and (max-width: 970px) {
   .Account-page-wrapper{
     position: relative;

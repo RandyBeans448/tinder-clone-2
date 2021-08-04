@@ -1,5 +1,14 @@
 import React, { useState, } from "react";
 import { Link,  useHistory } from "react-router-dom";
+
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment'
+import CardContent from '@material-ui/core/CardContent';
+import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -54,11 +63,26 @@ export default function AccountSettings() {
   return (
     <div>
       <Header />
-      <div>
-        <h1>Settings</h1>
-      </div>
       <p className="Errors">{errors}</p>
+      <div className="Account-page-container">
+      <Card className="Account-page-wrapper">
+        <CardContent>
+      <Typography gutterBottom variant="h5" component="h1">
+               Settings
+              </Typography>
+              <InputLabel htmlFor="standard-adornment-amount">Fist name</InputLabel>
+          <Input
+            id="standard-adornment-amount"
+            // value={values.amount}
+            // onChange={handleChange('amount')}
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+          />
+              </CardContent>
+      </Card>
+      </div>
+      <h2>Settings</h2>
       <form onSubmit={handleSubmit}>
+      <p>First name</p>
         <input
           id="firstName"
           name="firstName"
@@ -67,6 +91,7 @@ export default function AccountSettings() {
           className="Sign-up-input"
           defaultValue={firstName}
         ></input>
+        <p>Last name</p>
         <input
           id="lastName"
           name="lastName"
