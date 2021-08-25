@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import AOS from "aos";
+import "aos/dist/aos.css"; 
+
 export default function MatchButton({ conversations, person }) {
   const { id } = useParams();
   const [userConvo, setUserConvo] = useState({});
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1500,
+    });
+  }, []);
 
   useEffect(() => {
     for (const convo of conversations) {
@@ -14,7 +23,7 @@ export default function MatchButton({ conversations, person }) {
   }, []);
 
   return (
-    <div className="Message-div">
+    <div data-aos="zoom-out" className="Message-div">
       <Link to={`/user/conversation/${id}/${person._id}/${userConvo._id}`}>
         <div className="Message-wrapper">
           <button

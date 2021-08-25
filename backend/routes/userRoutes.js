@@ -14,6 +14,7 @@ const Conversation = require("../models/conversationsSchema");
 const Message = require("../models/messageSchema");
 
 const ObjectID = require('mongodb').ObjectID;
+const { json } = require("body-parser");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -87,6 +88,8 @@ const recursive = async (match, user, req, res, err, next) => {
     res.status(500).json(err);
   }
 }; 
+
+
 
 
 /*
@@ -269,22 +272,25 @@ router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, 
 })
 );
 
-
+/*
+Gets other users for swiping
+*/
 
 router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, next) => {
     const currentUser = await User.findOne({ _id: req.params.id });
+    
 
     if (
-      currentUser.gender === "Male" &&
-      currentUser.sexualPreference === "Straight"
+      currentUser.gender === "Male" && currentUser.sexualPreference === "Straight" 
     ) {
       const user = await User.find({
         gender: "Female",
         sexualPreference: "Straight",
       });
 
-      res.json({ user });
+      return res.json({ user });
     }
+
     if (
       currentUser.gender === "Male" &&
       currentUser.sexualPreference === "Gay"

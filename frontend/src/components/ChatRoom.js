@@ -3,6 +3,8 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import { format } from "timeago.js";
 
+import Message from "./Message";
+
 import Header from "./Header";
 
 import Button from "@material-ui/core/Button";
@@ -21,6 +23,8 @@ export default function ChatRoom() {
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState({});
   const [errors, setErrors] = useState([]);
+
+  // console.log(newMessage)
 
   const socket = useRef();
   const scrollRef = useRef();
@@ -50,9 +54,14 @@ export default function ChatRoom() {
   }, [api]);
 
   useEffect(() => {
+    console.log(receiverId);
+
     setMatch(receiverId);
+
     console.log(match, "match");
+
     socket.current = io("ws://localhost:7000");
+
     socket.current.on("getMessage", (data) => {
       console.log(data);
       const arrMess = {
@@ -60,11 +69,15 @@ export default function ChatRoom() {
         message: data.message,
         createdAt: Date.now(),
       };
-      console.log("cunt");
+
       setArrivalMessage(arrMess);
+
       console.log(arrivalMessage, "arrivalMessage");
+
       setMessages((prev) => [...prev, arrivalMessage]);
+
       console.log(messages, "Messages");
+
       callBack();
     });
   }, [receiverId, match, arrivalMessage, messages, callBack]);
@@ -171,12 +184,16 @@ export default function ChatRoom() {
                 messages.map((message, index) => {
                   return (
                     <div key={index} ref={scrollRef}>
-                      <div className="Dialog-box-container">
-                        <p className="Dialog-box-message">{message.message}</p>
+                      <div className={localUser._id === message.sender ? "Message" : "Message-alt"}>
+                        <div className={localUser._id === message.sender ? "Message-top" : "Message-top-alt"}>
+                          <p className={localUser._id === message.sender ? "Message-text" : "Message-text-alt"}>
+                            {message.message}
+                          </p>
+                        </div>
+                        <p className={localUser._id === message.sender ? "Message-bottom" : "Message-bottom-alt"}>
+                          {format(message.createdAt)}
+                        </p>
                       </div>
-                      <p className="Dialog-box-date">
-                        {format(message.createdAt)}
-                      </p>
                     </div>
                   );
                 })

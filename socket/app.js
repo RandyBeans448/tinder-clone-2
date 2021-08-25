@@ -11,6 +11,7 @@ const addUser = (userId, socketId) => {
         users.push({ userId, socketId });
 };
 
+
 const getUser = (userId) => {
     return users.find((user) => user.userId === userId);
   };

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 
+import AOS from "aos";
+import "aos/dist/aos.css"; 
+
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import InputLabel from '@material-ui/core/InputLabel';
 import TextField from "@material-ui/core/TextField";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
@@ -23,6 +24,12 @@ export default function AccountSettings() {
   const [lastName, setLastName] = useState(localUser.lastName);
   const [description, setDescription] = useState(localUser.description);
   const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1500,
+    });
+  }, []);
 
   const submit = () => {
     const data = {
@@ -57,7 +64,7 @@ export default function AccountSettings() {
     <div>
       <Header />
       <p className="Errors">{errors}</p>
-      <div className="Account-page-container">
+      <div data-aos="zoom-out" className="Account-page-container">
       <form onSubmit={handleSubmit}>
         <Card className="Settings-page-wrapper">
           <div className="Settings-div">
@@ -85,13 +92,11 @@ export default function AccountSettings() {
             </div>
             <div className="Settings-container-desc">
             <TextField
-          id="filled-multiline-static"
           label="Description"
           multiline
           rows={6}
           defaultValue={description}
           className="Settings-textarea"
-          variant="filled"
         />
         </div>
         <div className="Settings-sub-box">
@@ -119,55 +124,6 @@ export default function AccountSettings() {
         </Card>
         </form>
       </div>
-      {/* <h2>Settings</h2>
-      <form onSubmit={handleSubmit}>
-        <p>First name</p>
-        <input
-          id="firstName"
-          name="firstName"
-          type="firstName"
-          onChange={(e) => setFirstName(e.target.value)}
-          className="Sign-up-input"
-          defaultValue={firstName}
-        ></input>
-        <p>Last name</p>
-        <input
-          id="lastName"
-          name="lastName"
-          type="lastName"
-          onChange={(e) => setLastName(e.target.value)}
-          className="Sign-up-input"
-          defaultValue={lastName}
-        ></input>
-        <textarea
-          id="description"
-          name="description"
-          type="description"
-          onChange={(e) => setDescription(e.target.value)}
-          className="Sign-up-text"
-          defaultValue={description}
-        ></textarea>
-        <div className="Submit-box">
-          <div className="Submit-sub-box">
-            <p>Submit</p>
-            <button type="submit" className="Submit-button">
-              <IconButton>
-                <CheckCircleIcon fontSize="large">
-                  <button></button>
-                </CheckCircleIcon>
-              </IconButton>
-            </button>
-          </div>
-          <div className="Submit-sub-box">
-            <p>Cancel</p>
-            <Link to={`/user/account/${localUser._id}`}>
-              <IconButton>
-                <HighlightOffIcon fontSize="large"></HighlightOffIcon>
-              </IconButton>
-            </Link>
-          </div>
-        </div>
-      </form> */}
     </div>
   );
 }

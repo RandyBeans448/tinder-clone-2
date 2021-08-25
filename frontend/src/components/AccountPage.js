@@ -3,6 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import Header from "./Header";
 import axios from "axios";
 
+import AOS from "aos";
+import "aos/dist/aos.css"; 
+
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import SettingsIcon from "@material-ui/icons/Settings";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,6 +20,12 @@ export default function AccountPage() {
 
   const local = localStorage.getItem("user");
   const localUser = JSON.parse(local);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1500,
+    });
+  }, []);
 
   useEffect(() => {
     axios
@@ -34,8 +43,8 @@ export default function AccountPage() {
 
   return (
     <div>
-      <Header />
-      <div className="Account-page-container">
+      <Header  />
+      <div data-aos="zoom-out" className="Account-page-container">
         <Card className="Account-page-wrapper">
             <CardMedia
               className="Account-page-img"
