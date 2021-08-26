@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+
+import AOS from "aos";
+import "aos/dist/aos.css"; 
+
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
@@ -91,7 +95,7 @@ export default function CreateAccount() {
 
   return (
     <div>
-      <div className="Sign-up-div">
+      <div data-aos="zoom-out" className="Sign-up-div">
         <form onSubmit={handleSubmit}>
           <Card>
             <CardContent>

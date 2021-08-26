@@ -39,7 +39,7 @@ function asyncHandler(callback) {
 }
 
 
-const recursive = async (match, user, req, res, err, next) => {
+const recursive = async (match, user, req, res, error, next) => {
 
   const newUser = {
     _id: user._id,
@@ -70,7 +70,7 @@ const recursive = async (match, user, req, res, err, next) => {
 
         console.log(newConversation, "New conversation");
       
-        if (err) {
+        if (error) {
           
           res.status(500).json(err);
 
@@ -85,12 +85,39 @@ const recursive = async (match, user, req, res, err, next) => {
       }
     };
   } catch(error) {
-    res.status(500).json(err);
+    res.status(500).json(error);
   }
 }; 
 
+// const filter = async (currentUser, user, req, res, error, next) => {
 
+//   console.log(user);
+//   console.log(currentUser);
 
+//   const users = user;
+
+//   const filtered = users.filter(user._id === currentUser._id);
+  
+//   console.log("filtered")
+
+//   try {
+//     console.log("oioi")
+//     for (let i = 0; i < currentUser.likes; i++) {
+//       for (let j = 0; j < currentUser.dislikes; j++) {
+//         if (
+//           currentUser.likes !== user._id ||
+//           currentUser.dislikes !== user._id
+//         ) {
+//           return res.json({ user });
+//         } else {
+//           return res.json({ error });
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     res.status(500).json(error);
+//   }
+// };
 
 /*
 Login account
@@ -276,9 +303,11 @@ router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, 
 Gets other users for swiping
 */
 
-router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, next) => {
+router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, error, next) => {
+
     const currentUser = await User.findOne({ _id: req.params.id });
     
+    console.log(currentUser._id);
 
     if (
       currentUser.gender === "Male" && currentUser.sexualPreference === "Straight" 
@@ -286,7 +315,11 @@ router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, ne
       const user = await User.find({
         gender: "Female",
         sexualPreference: "Straight",
+
       });
+
+
+      // filter(currentUser, user);
 
       return res.json({ user });
     }
@@ -501,6 +534,8 @@ router.delete("/user/delete/:id", authenticateUser, asyncHandler(async (req, res
     );
   })
 );
+
+
 
 
 module.exports = router;
