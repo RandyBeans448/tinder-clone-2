@@ -89,41 +89,44 @@ const recursive = async (match, user, req, res, error, next) => {
   }
 }; 
 
-// const filter = async (currentUser, user, req, res, error, next) => {
+// const filter = async (currentUser, users, req, res, error) => {
 
-//   console.log(user);
-//   console.log(currentUser);
+//   userResults = users;
 
-//   const users = user;
-
-//   const filtered = users.filter(user._id === currentUser._id);
-  
-//   console.log("filtered")
+//   console.log("start");
 
 //   try {
-//     console.log("oioi")
-//     for (let i = 0; i < currentUser.likes; i++) {
-//       for (let j = 0; j < currentUser.dislikes; j++) {
-//         if (
-//           currentUser.likes !== user._id ||
-//           currentUser.dislikes !== user._id
-//         ) {
-//           return res.json({ user });
-//         } else {
-//           return res.json({ error });
-//         }
-//       }
-//     }
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
+
+//     for (let i = 0; i < userResults.length; i++) {
+//       if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
+//         usersArray.push(userResults[i]);
+//       };
+  
+//       if (currentUser.dislikes.length > 0) {
+//         if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+//           usersArray.push(userResults[i]);
+//         };
+//       };
+  
+//       console.log("before array");
+
+//       if (usersArray) {
+//         console.log(usersArray, "usersArray");
+//         return res.json({ usersArray });
+//       } else {
+//         return res.json({ users });
+//       };
+//     };
+//   } catch(error) {
+//     // return res.status(500).json(error);
+//   };
 // };
 
 /*
 Login account
 */
 
-router.post( "/login", asyncHandler(async (req, res, err) => {
+router.post( "/login", asyncHandler(async (req, res, error) => {
 
     const userBody = req.body;
 
@@ -200,7 +203,7 @@ router.post( "/user/create-account", upload.single("file"), [
       const errorMessages = errors.array().map((error) => error.msg);
       console.log(errorMessages);
       // Return the validation errors to the client.
-      return res.status(400).json({ errors: errorMessages });
+      return res.status(400).json({ error: errorMessages });
     }
 
     const {file, body: { firstName, lastName, emailAddress, password, gender, sexualPreference, age, description}} = req;
@@ -282,13 +285,13 @@ function authenticateUser(req, res, next) {
 Gets user account
 */
 
-router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, next, err) => {
+router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
 
   const user = await User.findOne({_id: req.params.id})
   const conversation = await Conversation.find({ "members": new ObjectID(req.params.id)});
 
-  if (err) {
-    res.status(500).json(err);
+  if (error) {
+    res.status(500).json(error);
   } else {
     console.log(conversation, "Geezer");
     res.json({
@@ -303,62 +306,155 @@ router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, 
 Gets other users for swiping
 */
 
-router.get("/user/match/:id", authenticateUser, asyncHandler(async (req, res, error, next) => {
+router.get( "/user/match/:id", authenticateUser, asyncHandler( async (req, res, error) => {
 
     const currentUser = await User.findOne({ _id: req.params.id });
-    
-    console.log(currentUser._id);
 
-    if (
-      currentUser.gender === "Male" && currentUser.sexualPreference === "Straight" 
-    ) {
-      const user = await User.find({
-        gender: "Female",
-        sexualPreference: "Straight",
+    let userResults = [];
 
-      });
+    let usersArray = [];
+
+    if ( currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
+ 
+      const users = await User.find({ gender: "Female", sexualPreference: "Straight" });
+
+      userResults = users;
+
+      // filter(currentUser, users);
+
+      for (let i = 0; i < userResults.length; i++) {
+
+        if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
+          usersArray.push(userResults[i]);
+        };
+
+        if (currentUser.dislikes.length > 0) {
+          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+            usersArray.push(userResults[i]);
+          };
+        }
+
+        if (usersArray) {
+          console.log(usersArray, "usersArray");
+          return res.json({ usersArray });
+        } else {
+          return res.json({ users });
+        };
+      };
+    };
+
+    if ( currentUser.gender === "Male" && currentUser.sexualPreference === "Gay") {
+
+      const users = await User.find({ gender: "Male", sexualPreference: "Gay" });
+
+      userResults = users;
+
+      for (let i = 0; i < userResults.length; i++) {
+
+        if ( currentUser.likes.map((like) => { like !== userResults[i]._id; })) {
+          usersArray.push(userResults[i]);
+        };
+
+           if (currentUser.dislikes.length > 0) {
+          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+            usersArray.push(userResults[i]);
+          };
+        }
+
+        if (usersArray) {
+          console.log(usersArray, "usersArray");
+          return res.json({ usersArray });
+        } else {
+          return res.json({ users });
+        };
+      };
+    };
+
+    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Straight") {
+
+      const users = await User.find({ gender: "Male", sexualPreference: "Straight" });
+
+      userResults = users;
+
+      for (let i = 0; i < userResults.length; i++) {
+
+        if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
+          usersArray.push(userResults[i]);
+        };
+
+        if (currentUser.dislikes.length > 0) {
+          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+            usersArray.push(userResults[i]);
+          };
+        }
+
+        if (usersArray) {
+          console.log(usersArray, "usersArray");
+          return res.json({ usersArray });
+        } else {
+          return res.json({ users });
+        };
+      };
+    };
+
+    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Lesbian" ) {
+
+      const users = await User.find({ gender: "Female", sexualPreference: "Lesbian" });
+
+      userResults = users;
+
+      for (let i = 0; i < userResults.length; i++) {
+
+        if ( currentUser.likes.map((like) => {like !== userResults[i]._id })) {
+          usersArray.push(userResults[i]);
+        };
+
+        if (currentUser.dislikes.length > 0) {
+          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+            usersArray.push(userResults[i]);
+          };
+        }
 
 
-      // filter(currentUser, user);
+        if (usersArray) {
+          console.log(usersArray, "usersArray");
+          return res.json({ usersArray });
+        } else {
+          return res.json({ users });
+        };
+      };
+    };
 
-      return res.json({ user });
-    }
-
-    if (
-      currentUser.gender === "Male" &&
-      currentUser.sexualPreference === "Gay"
-    ) {
-      const user = await User.find({ gender: "Male", sexualPreference: "Gay" });
-
-      return res.json({ user });
-    }
-    if (
-      currentUser.gender === "Female" &&
-      currentUser.sexualPreference === "Straight"
-    ) {
-      const user = await User.find({
-        gender: "Male",
-        sexualPreference: "Straight",
-      });
-
-      return res.json({ user });
-    }
-    if (
-      currentUser.gender === "Female" &&
-      currentUser.sexualPreference === "Lesbian"
-    ) {
-      const user = await User.find({
-        gender: "Female",
-        sexualPreference: "Lesbian",
-      });
-
-      return res.json({ user });
-    }
     if (currentUser.sexualPreference === "Bisexual") {
-      const user = await User.find();
 
-      return res.json({ user });
-    }
+      const users = await User.find();
+
+      userResults = users;
+
+      for (let i = 0; i < userResults.length; i++) {
+
+       if (currentUser._id === userResults[i]._id ) {
+        usersResults[i].slice();
+       };
+
+        if ( currentUser.likes.map((like) => {like !== userResults[i]._id })) {
+          usersArray.push(userResults[i]);
+        };
+
+        if (currentUser.dislikes.length > 0) {
+          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
+            usersArray.push(userResults[i]);
+          };
+        }
+
+        if (usersArray) {
+          console.log(usersArray, "usersArray");
+          return res.json({ usersArray });
+        } else {
+          return res.json({ users });
+        };
+      };
+    };
   })
 );
 
@@ -389,10 +485,10 @@ router.patch("/user/settings/:id",[
 
     console.log(updateObject)
 
-    await User.findOneAndUpdate({ _id: new ObjectID(req.params.id) }, updateObject , { new: true }, function(err, doc) {
+    await User.findOneAndUpdate({ _id: new ObjectID(req.params.id) }, updateObject , { new: true }, function(error, doc) {
 
-      if(err) {
-          return res.json({success: false, message: err.message});
+      if(error) {
+          return res.json({success: false, message: error.message});
       }
 
       res.json({ updateObject });
@@ -407,7 +503,7 @@ router.patch("/user/settings/:id",[
 Adds matches to the user 
 */
 
-router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, next) => {
+router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
 
   const errors = validationResult(req);
 
@@ -415,7 +511,7 @@ router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res,
 
   if (!errors.isEmpty()) {
     const errorMessages = errors.array().map((error) => error.msg);
-    return res.status(400).json({ errors: errorMessages });
+    return res.status(400).json({ error: errorMessages });
   }
 
   const updateObject = req.body.likes;
@@ -433,8 +529,8 @@ router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res,
 
     await User.findOneAndUpdate({ _id: req.params.id }, { $push: { dislikes: req.body.dislikes._id } },
 
-      function (err, doc) {
-        if (err) {
+      function (error, doc) {
+        if (error) {
           return res.json({ success: false, message: err.message });
         }
 
@@ -456,21 +552,19 @@ Unmatch from user
 router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, err) => {
 
 
-  if (err) {
-    res.status(500).json(err);
+  if (error) {
+    res.status(500).json(error);
   } else {
 
-    console.log("starting")
+    
     const user = await User.findOne({ _id: req.params.id });
 
-    console.log(user)
-    console.log(req.body.removeMatch)
-    await User.findOneAndUpdate( { _id: req.params.id }, { $pull: { matches: { _id: new ObjectID(req.body.removeMatch) } } }, function(err, data) {
-      console.log(err, data);
+    await User.findOneAndUpdate( { _id: req.params.id }, { $pull: { matches: { _id: new ObjectID(req.body.removeMatch) } } }, function(error, data) {
+      console.log(error, data);
     });
   
-    await User.findOneAndUpdate( { _id: new ObjectID(req.body.removeMatch) }, { $pull: { matches: { _id: new Object(user._id) } } }, function(err, data) {
-      console.log(err, data);
+    await User.findOneAndUpdate( { _id: new ObjectID(req.body.removeMatch) }, { $pull: { matches: { _id: new Object(user._id) } } }, function(error, data) {
+      console.log(error, data);
     });
   
     res.json({message: "Unmatched"})
@@ -481,11 +575,11 @@ router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser
 Conversation routes
 */
 
-router.get("/user/conversation/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, err) => {
+router.get("/user/conversation/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, error) => {
   const conversation = await Conversation.find();
   console.log(conversation , "Conversation");
-  if (err) {
-    res.status(500).json(err);
+  if (error) {
+    res.status(500).json(error);
   } else {
     res.status(200).json(conversation);
   }
@@ -495,24 +589,24 @@ router.get("/user/conversation/:id/:receiverId/:conversationId", authenticateUse
 Messenger routers
 */
 
-router.post("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, err) => {
+router.post("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, error) => {
   console.log(req.body, "req.body")
   const newMessage = new Message(req.body);
   console.log(newMessage, "new message")
-  if (err) {
-    res.status(500).json(err);
+  if (error) {
+    res.status(500).json(error);
   } else {
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
   }
 }));
 
-router.get("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, err) => {
+router.get("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, error) => {
   const messages = await Message.find({
     conversationId: req.params.conversationId,
   });
-  if (err) {
-    res.status(500).json(err);
+  if (error) {
+    res.status(500).json(error);
   } else {
     res.status(200).json(messages).end();
   }
@@ -522,13 +616,13 @@ router.get("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async
 Delete user account
 */
 
-router.delete("/user/delete/:id", authenticateUser, asyncHandler(async (req, res, next) => {
+router.delete("/user/delete/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
     User.findOneAndDelete({ _id: new ObjectID(req.params.id) },
       (err, User) => {
-        if (!err) {
+        if (!error) {
           res.json({ msg: "customer deleted", deleted: User });
         } else {
-          console.log("Error removing :" + err);
+          console.log("Error removing :" + error);
         }
       }
     );

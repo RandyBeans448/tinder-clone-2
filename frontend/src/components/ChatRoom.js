@@ -163,16 +163,9 @@ export default function ChatRoom() {
     <div>
       <div>
         <Header />
-        <Button
-          variant="outlined"
-          color="secondary"
-          className="Unmatch-button"
-          onClick={unmatch}
-        >
-          Unmatch
-        </Button>
+
         <p> {errors}</p>
-        <div className="Chat-banner">
+        <div >
           <div className="Chat-container"></div>
         </div>
         <div className="Chat-box-wrapper">
@@ -202,6 +195,13 @@ export default function ChatRoom() {
           </div>
         </div>
         <div className="Chat-area-wrapper">
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={unmatch}
+        >
+          Unmatch
+        </Button>
           <input
             onChange={(e) => setNewMessage(e.target.value)}
             value={newMessage}

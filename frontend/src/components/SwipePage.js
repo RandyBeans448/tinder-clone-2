@@ -45,9 +45,12 @@ export default function SwipePage() {
         },
       })
       .then((res) => {
-        setResults(res.data.user);
+        setResults(res.data.usersArray || res.data.users);
+        console.log(res.data.message);
       });
   }, []);
+
+  console.log(results, "res")
 
   useEffect(() => {
     let timer1 = setTimeout(() => setDirection(""), 1000);
