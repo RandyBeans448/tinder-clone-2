@@ -477,9 +477,6 @@ position: relative;
   font-size: 3vh;
 }
 
-
-  
-
 .No-matches-container {
   display: flex;
   flex-flow: row wrap;
@@ -526,7 +523,8 @@ top: 25vh;
   background-color:#ffffff;
   width: 95vh;
   height: 80vh;
-  border: solid thin rgb(243, 240, 240);
+  border: solid thin rgb(179, 177, 177);
+  border-radius: 1vh;
   overflow: scroll;
 }
 
