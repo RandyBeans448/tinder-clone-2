@@ -510,8 +510,31 @@ top: 25vh;
 
 /* Chat page */
 
+.Chat-banner-wrapper {
+  
+}
+
 .Chat-banner {
-  border-bottom: 0.25vh solid #dddddd;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 8px 8px -8px rgb(169, 169, 169);
+  padding-bottom: 1vh;
+}
+
+.Chat-box {
+  background-color:#ffffff;
+  width: 95vh;
+  height: 70vh;
+  overflow: scroll;
+}
+
+.Chat-img {
+  width: 10vh; /* width of container */
+  height: 10vh; /* height of container */
+  object-fit: cover;
+  object-position: 20% 10%; /* try 20px 10px */ 
+  border: none;
+  border-radius: 50%;
 }
 
 .Chat-box-wrapper {
@@ -519,29 +542,12 @@ top: 25vh;
   justify-content: center;
 }
 
-.Chat-box {
-  background-color:#ffffff;
-  width: 95vh;
-  height: 80vh;
-  border: solid thin rgb(179, 177, 177);
-  border-radius: 1vh;
-  overflow: scroll;
-}
-
-.Chat-img {
-  border-radius: 50%;
-  overflow: hidden;
-  border: none;
-  box-sizing: border-box;
-  margin: auto;
-}
-
 .Chat-area-wrapper {
   display: flex;
   justify-content: center;
   border: none;
   border-radius: 25%;
-  margin-top: 1vh; 
+  margin: 1vh;
 }
 
 .Chat-area {

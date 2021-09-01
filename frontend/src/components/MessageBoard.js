@@ -13,6 +13,7 @@ export default function MessageBoard () {
   const [ matches, setMatches ] = useState({});
   const [ conversations, setConversations ] = useState([])
 
+
   useEffect(() => {
     axios
       .get(api, {
@@ -29,6 +30,8 @@ export default function MessageBoard () {
   }, []);
 
   const matchesState = Array.from(matches);
+
+  console.log(matches)
 
     return (
       <div>

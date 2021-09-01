@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import { format } from "timeago.js";
 
-import Message from "./Message";
+import CardMedia from "@material-ui/core/CardMedia";
 
 import Header from "./Header";
 
@@ -18,13 +18,12 @@ export default function ChatRoom() {
   const local = localStorage.getItem("user");
   const localUser = JSON.parse(local);
 
-  const [match, setMatch] = useState();
+  const [matchId, setMatchId] = useState();
+  const [matchDetails, setMatchDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState({});
   const [errors, setErrors] = useState([]);
-
-  // console.log(newMessage)
 
   const socket = useRef();
   const scrollRef = useRef();
@@ -35,6 +34,7 @@ export default function ChatRoom() {
   const { conversationId } = useParams();
 
   const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
+  // console.log(matchDetails)
 
   const callBack = useCallback(() => {
     const getMessages = async () => {
@@ -53,12 +53,22 @@ export default function ChatRoom() {
     getMessages();
   }, [api]);
 
+  // console.log(localUser.matches, "local user matches");
+
+  useEffect(() => {
+    for (let i = 0; i < localUser.matches.length; i++) {
+      if (localUser.matches[i]._id === receiverId) {
+        setMatchDetails(localUser.matches[i]);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     console.log(receiverId);
 
-    setMatch(receiverId);
+    setMatchId(receiverId);
 
-    console.log(match, "match");
+    console.log(matchId, "match");
 
     socket.current = io("ws://localhost:7000");
 
@@ -80,7 +90,7 @@ export default function ChatRoom() {
 
       callBack();
     });
-  }, [receiverId, match, arrivalMessage, messages, callBack]);
+  }, [receiverId, matchId, arrivalMessage, messages, callBack]);
 
   useEffect(() => {
     socket.current.emit("addUser", localUser._id);
@@ -142,7 +152,7 @@ export default function ChatRoom() {
     axios
       .patch(
         api,
-        { removeMatch: match },
+        { removeMatch: matchId },
         {
           headers: {
             Authorization: localStorage.getItem("jwt"),
@@ -165,7 +175,20 @@ export default function ChatRoom() {
         <Header />
 
         <p> {errors}</p>
-        <div >
+
+        <div className="Chat-banner">
+          <div>
+            <div>
+              <img
+                alt="profile"
+                className="Chat-img"
+                src={`http://localhost:5000/${matchDetails.path}`}
+              ></img>
+            </div>
+          </div>
+        </div>
+
+        <div>
           <div className="Chat-container"></div>
         </div>
         <div className="Chat-box-wrapper">
@@ -177,13 +200,37 @@ export default function ChatRoom() {
                 messages.map((message, index) => {
                   return (
                     <div key={index} ref={scrollRef}>
-                      <div className={localUser._id === message.sender ? "Message" : "Message-alt"}>
-                        <div className={localUser._id === message.sender ? "Message-top" : "Message-top-alt"}>
-                          <p className={localUser._id === message.sender ? "Message-text" : "Message-text-alt"}>
+                      <div
+                        className={
+                          localUser._id === message.sender
+                            ? "Message"
+                            : "Message-alt"
+                        }
+                      >
+                        <div
+                          className={
+                            localUser._id === message.sender
+                              ? "Message-top"
+                              : "Message-top-alt"
+                          }
+                        >
+                          <p
+                            className={
+                              localUser._id === message.sender
+                                ? "Message-text"
+                                : "Message-text-alt"
+                            }
+                          >
                             {message.message}
                           </p>
                         </div>
-                        <p className={localUser._id === message.sender ? "Message-bottom" : "Message-bottom-alt"}>
+                        <p
+                          className={
+                            localUser._id === message.sender
+                              ? "Message-bottom"
+                              : "Message-bottom-alt"
+                          }
+                        >
                           {format(message.createdAt)}
                         </p>
                       </div>
@@ -195,13 +242,9 @@ export default function ChatRoom() {
           </div>
         </div>
         <div className="Chat-area-wrapper">
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={unmatch}
-        >
-          Unmatch
-        </Button>
+          <Button size="small" variant="outlined" color="secondary" onClick={unmatch}>
+            Unmatch
+          </Button>
           <input
             onChange={(e) => setNewMessage(e.target.value)}
             value={newMessage}
