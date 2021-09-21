@@ -61,6 +61,10 @@ ul {
   color: white;
 }
 
+.Errors-p {
+  color: red;
+}
+
 /* Sign up */
 
 .Sign-up-div {
@@ -152,6 +156,7 @@ position: relative;
 .Card-img {
   border: none;
   border-radius: 10px;
+  object-fit: cover;
 }
 
 .Card-name-age {
@@ -171,7 +176,7 @@ position: relative;
   position:relative;
   bottom: 13vh;
   cursor: pointer;
-  z-index: 10;
+  z-index: 100;
 }
 
 .Submit-box {
@@ -186,12 +191,15 @@ position: relative;
   display: inline-block;
   background-color: white;
   border: none;
+  margin-right: 2vh;
+
 }
 
 .Right-button {
   display: inline-block;
   background-color: white;
   border: none;
+  margin-left: 2vh;
 }
 
 /* Swipe page */
@@ -231,9 +239,8 @@ position: relative;
 .Account-page-wrapper{
   position: relative;
   top: 6vh;
-  height: 75vh;
+  height: 82vh;
   width: 50vh;
-  padding-bottom: 5vh;
   box-shadow: 0 4px 8px 0 rgba(223, 221, 221, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -245,11 +252,9 @@ position: relative;
 .Account-page-desc {
   text-align: left;
   overflow: scroll;
-  min-height: 15vh;
-  max-height: 15vh;
-  border: 1px solid grey;
+  height: 15vh;
+  border: 1px solid rgb(150, 150, 150);
 }
-
 
 .Account-page-img {
   position: relative;
@@ -357,15 +362,47 @@ position: relative;
 .Loading-container {
   display: inline;
   justify-content: center;
-  position: absolute;
+  position: relative;
   top: 30vh;
 }
 
-.Its-a-match {
-  font-size: large;
-  position: absolute;
+
+.Its-a-match-container {
+  margin: 0 auto;
+  height: 40vh;
+  width: 80vh;
+  position: relative;
+  z-index: 10;
+}
+
+.Its-a-match-h2 {
+  font-size: 5vh;
+  font-style: italic;
+  font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: -webkit-linear-gradient(rgb(0, 255, 157), rgb(0, 255, 242));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1vh;
+  color: transparent;
+  position: relative;
+  top: 15vh;
   z-index: 10;
   }
+
+.Its-a-match-h1 {
+  font-size: 17vh;
+  font-style: italic;
+  font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: -webkit-linear-gradient(rgb(0, 255, 157), rgb(0, 255, 242));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1vh;
+  color: transparent;
+  position: relative;
+  z-index: 10;
+  }
+
+
   
   .Liked-swipe {
     position:fixed;
@@ -658,8 +695,8 @@ top: 25vh;
 }
 
 .Settings-container{
-margin-top: 5vh;
-margin-bottom: 5vh;
+margin-top: 2vh;
+margin-bottom: 2vh;
 }
 
 .Settings-input {
@@ -667,8 +704,8 @@ margin-bottom: 5vh;
 }
 
 .Settings-label {
-  position: relative;
-  right: 17.5vh;
+position: relative;
+right: 17.5vh;
 margin-bottom:1vh ;
 font-size: small;
 }
@@ -681,11 +718,21 @@ font-size: small;
 
 .Settings-sub-box {
   position: relative;
-  bottom: 23vh;
   display: inline-block;
+  bottom: 20vh;
 }
 
-.Settings-cancel {
+.Settings-left-button {
+  display: inline-block;
+  border: none;
+}
+
+.Settings-right-button {
+  display: inline-block;
+  border: none;
+}
+
+.Settings-button {
   padding: 10px;
   border: none;
   border-radius: 50px;
@@ -695,7 +742,7 @@ font-size: small;
   );
 }
  
-@media (max-width: 300px) {
+@media only screen and (max-width: 600px) {
 
   .Account-page-wrapper {
     position: relative;
@@ -711,25 +758,11 @@ font-size: small;
     min-width: 50vh;
     min-height: 50vh;
   }
-  
+
   .Account-page-desc {
     text-align: left;
     overflow: scroll;
-    min-height: 15vh;
-    max-height: 15vh;
-    border: 1px solid grey;
+    height: 18vh;
   }
 }
 
-.Settings-label {
-  position: relative;
-  right: 16.5vh;
-margin-bottom:1vh ;
-}
-/* 
-.Chat-area {
-  max-width: 30vh;
-  min-width: 30vh;
-  max-height: 8vh;
-  min-height: 8vh;
-} */

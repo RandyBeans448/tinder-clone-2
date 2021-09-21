@@ -24,14 +24,12 @@ export default function MessageBoard () {
         },
       })
       .then((res) => {
-        setConversations(res.data.conversation)
+        setConversations(res.data.conversation);
         setMatches(res.data.user.matches);
       });
-  }, []);
+  }, [api]);
 
   const matchesState = Array.from(matches);
-
-  console.log(matches)
 
     return (
       <div>

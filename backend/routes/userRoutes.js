@@ -4,30 +4,30 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
-const cookieParser = require('cookie-parser'); 
+const cookieParser = require("cookie-parser");
 const { check, validationResult } = require("express-validator");
 
-const multer = require('multer');
+const multer = require("multer");
 
 const User = require("../models/userSchema");
 const Conversation = require("../models/conversationsSchema");
 const Message = require("../models/messageSchema");
 
-const ObjectID = require('mongodb').ObjectID;
+const ObjectID = require("mongodb").ObjectID;
 const { json } = require("body-parser");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/')
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '.jpg')
-  }
-})
+    cb(null, Date.now() + ".jpg");
+  },
+});
 
-const upload = multer({ storage: storage }) 
+const upload = multer({ storage: storage });
 
-function asyncHandler(callback) {
+const asyncHandler = (callback) => {
   return async (req, res, next) => {
     try {
       await callback(req, res, next);
@@ -36,8 +36,7 @@ function asyncHandler(callback) {
       console.log(error);
     }
   };
-}
-
+};
 
 const recursive = async (match, user, req, res, error, next) => {
 
@@ -64,24 +63,14 @@ const recursive = async (match, user, req, res, error, next) => {
     
         await User.findOneAndUpdate({ _id: match._id }, { $push: { matches: newUser } });
 
-        const newConversation = new Conversation({
-          members: [user._id, match._id],
-        });
+        const newConversation = new Conversation({ members: [user._id, match._id] });
 
-        console.log(newConversation, "New conversation");
-      
-        if (error) {
-          
-          res.status(500).json(err);
+        await newConversation.save();
 
-        } else {
-          const savedConversation = await newConversation.save();
-          console.log(savedConversation);
-          res.status(200).json(savedConversation, { message: 'Its a match' }).end();
-
-        }
-      } else {
-        res.json({ message: 'Liked' })
+        console.log("match");
+   
+        return res.json({ message: 'Its a match' }).end();
+    
       }
     };
   } catch(error) {
@@ -89,76 +78,86 @@ const recursive = async (match, user, req, res, error, next) => {
   }
 }; 
 
-// const filter = async (currentUser, users, req, res, error) => {
+/*
+Filter function
 
-//   userResults = users;
+The filter functions takes the current user and loops through the likes and dislikes.
+If the current user has any likes or dislikes that match the users that have been found
+matching the search parameters
+(e.g If the current user is and straight man then the current user will be shown straight women)
+then they are removed from the users array.
 
-//   console.log("start");
+*/
 
-//   try {
+const filter = async (currentUser, users, req, res, error) => {
 
-//     for (let i = 0; i < userResults.length; i++) {
-//       if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
-//         usersArray.push(userResults[i]);
-//       };
+  try {
+
+    for (let i = 0; i < currentUser.likes.length; i++) {
+      // for (let k = 0; k < currentUser.dislikes.length; k ++) {
+        for (let j = 0; j < users.length; j++) {
+
+          if ( JSON.stringify(currentUser.likes[i]) === JSON.stringify(users[j]._id) ) {
+            
+            let index = users.indexOf(users[j]);
+            console.log(index, "index")
+            users.splice(index);
   
-//       if (currentUser.dislikes.length > 0) {
-//         if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-//           usersArray.push(userResults[i]);
-//         };
-//       };
-  
-//       console.log("before array");
+          };
+        };
+      };
+    // };
 
-//       if (usersArray) {
-//         console.log(usersArray, "usersArray");
-//         return res.json({ usersArray });
-//       } else {
-//         return res.json({ users });
-//       };
-//     };
-//   } catch(error) {
-//     // return res.status(500).json(error);
-//   };
-// };
+    return res.json({ users });
+    
+  } catch (error) {
+    console.log(error, "error");
+  }
+};
+
 
 /*
 Login account
 */
 
 router.post( "/login", asyncHandler(async (req, res, error) => {
-
     const userBody = req.body;
 
     const user = await User.findOne({ emailAddress: req.body.emailAddress });
 
     if (!user) {
-        console.log("There is no account with that email")
-        res.status(403).send({ error: "There is no account with that email address" }).end();
+      console.log("There is no account with that email");
+      res.status(403).send({ error: "There is no account with that email address" }).end();
     } else {
-      const authenticated = await bcryptjs.compare(userBody.password, user.password);
+      const authenticated = await bcryptjs.compare(
+        userBody.password,
+        user.password
+      );
 
       if (userBody && user) {
-  
         if (authenticated) {
-  
           console.log("match");
-          const accessToken = jwt.sign(user.toJSON(), process.env.ACCESS_TOKEN_SECRET, { expiresIn: 86400 });
-        
+          const accessToken = jwt.sign(
+            user.toJSON(),
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: 86400 }
+          );
+
           res.cookie("token", accessToken, { httpOnly: false, maxAge: 86400 });
-  
-          res.setHeader('Authorization', 'Bearer '+ accessToken); 
-  
-          res.json({ 
-            user: user,
-            accessToken: accessToken,
+
+          res.setHeader("Authorization", "Bearer " + accessToken);
+
+          res
+            .json({
+              user: user,
+              accessToken: accessToken,
             })
-            .send()
-          } else {
-          console.log("Password does not match")
+            .send();
+        } else {
+          console.log("Password does not match");
           res.status(403).send({ error: "That password is not valid" }).end();
         }
-      } 
+      }
     }
   })
 );
@@ -167,7 +166,8 @@ router.post( "/login", asyncHandler(async (req, res, error) => {
 Create user account
 */
 
-router.post( "/user/create-account", upload.single("file"), [
+router.post( "/user/create-account", upload.single("file"),
+  [
     check("firstName")
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('Please provide a value for "first name"'),
@@ -201,15 +201,25 @@ router.post( "/user/create-account", upload.single("file"), [
     if (!errors.isEmpty()) {
       // Use the Array `map()` method to get a list of error messages.
       const errorMessages = errors.array().map((error) => error.msg);
-      console.log(errorMessages);
+      console.log(errorMessages, "Error messages");
       // Return the validation errors to the client.
       return res.status(400).json({ error: errorMessages });
     }
 
-    const {file, body: { firstName, lastName, emailAddress, password, gender, sexualPreference, age, description}} = req;
+    const {
+      file,
+      body: {
+        firstName,
+        lastName,
+        emailAddress,
+        password,
+        gender,
+        sexualPreference,
+        age,
+        description,
+      },
+    } = req;
 
-    console.log(firstName, lastName, emailAddress, password, gender, sexualPreference, age, description, file);
-    
     //new user request body using mongo model from schema
     const postUser = new User({
       firstName: firstName,
@@ -221,7 +231,7 @@ router.post( "/user/create-account", upload.single("file"), [
       age: age,
       description: description,
       file: file,
-      path: req.file.path
+      path: req.file.path,
     });
 
     const userEmail = await User.findOne({
@@ -229,9 +239,8 @@ router.post( "/user/create-account", upload.single("file"), [
     });
 
     if (postUser.emailAddress === userEmail) {
-      console.log("User with this email already exists");
 
-      return res.status(500).end();
+      return res.status(500).send({message: "User with this email already exists"}).end();
 
     } else if (postUser) {
       //if true salts the password with bcryptjs
@@ -250,8 +259,7 @@ router.post( "/user/create-account", upload.single("file"), [
 Authenticate user
 */
 
-function authenticateUser(req, res, next) {
-
+const authenticateUser = (req, res, next) => {
   req.header("Access-Control-Allow-Origin", "*");
   req.header(
     "Access-Control-Allow-Headers",
@@ -265,8 +273,6 @@ function authenticateUser(req, res, next) {
     req.headers["Authorization"] ||
     req.headers["authorization"] ||
     req.cookies.token;
-
-  console.log(token);
 
   if (!token) {
     return res.status(403).send({ auth: false, message: "No token provided." });
@@ -285,175 +291,69 @@ function authenticateUser(req, res, next) {
 Gets user account
 */
 
-router.get("/user/account/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
+router.get( "/user/account/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
 
-  const user = await User.findOne({_id: req.params.id})
-  const conversation = await Conversation.find({ "members": new ObjectID(req.params.id)});
+    const user = await User.findOne({ _id: req.params.id });
 
-  if (error) {
-    res.status(500).json(error);
-  } else {
-    console.log(conversation, "Geezer");
-    res.json({
-      user: user,
-      conversation: conversation
-    });
-  }
-})
+    const conversation = await Conversation.find({ members: new ObjectID(req.params.id) });
+
+    if (error) {
+      res.status(500).json(error);
+    } else {
+      res.json({
+        user: user,
+        conversation: conversation,
+      });
+    }
+  })
 );
 
 /*
 Gets other users for swiping
 */
 
-router.get( "/user/match/:id", authenticateUser, asyncHandler( async (req, res, error) => {
+router.get( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, error) => {
 
     const currentUser = await User.findOne({ _id: req.params.id });
 
-    let userResults = [];
+    if (currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
 
-    let usersArray = [];
+      const users = await User.find({ gender: "Female", sexualPreference: "Straight"});
 
-    if ( currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
- 
-      const users = await User.find({ gender: "Female", sexualPreference: "Straight" });
+      filter(currentUser, users, req, res, error);
 
-      userResults = users;
-
-      // filter(currentUser, users);
-
-      for (let i = 0; i < userResults.length; i++) {
-
-        if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
-          usersArray.push(userResults[i]);
-        };
-
-        if (currentUser.dislikes.length > 0) {
-          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-            usersArray.push(userResults[i]);
-          };
-        }
-
-        if (usersArray) {
-          console.log(usersArray, "usersArray");
-          return res.json({ usersArray });
-        } else {
-          return res.json({ users });
-        };
-      };
     };
 
-    if ( currentUser.gender === "Male" && currentUser.sexualPreference === "Gay") {
+    if (currentUser.gender === "Male" && currentUser.sexualPreference === "Gay") {
 
       const users = await User.find({ gender: "Male", sexualPreference: "Gay" });
 
-      userResults = users;
+      filter(currentUser, users, req, res, error);
 
-      for (let i = 0; i < userResults.length; i++) {
-
-        if ( currentUser.likes.map((like) => { like !== userResults[i]._id; })) {
-          usersArray.push(userResults[i]);
-        };
-
-           if (currentUser.dislikes.length > 0) {
-          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-            usersArray.push(userResults[i]);
-          };
-        }
-
-        if (usersArray) {
-          console.log(usersArray, "usersArray");
-          return res.json({ usersArray });
-        } else {
-          return res.json({ users });
-        };
-      };
     };
 
-    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Straight") {
+    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Straight" ) {
 
       const users = await User.find({ gender: "Male", sexualPreference: "Straight" });
 
-      userResults = users;
+      filter(currentUser, users, req, res, error);
 
-      for (let i = 0; i < userResults.length; i++) {
-
-        if ( currentUser.likes.map((like) => { like !== userResults[i]._id })) {
-          usersArray.push(userResults[i]);
-        };
-
-        if (currentUser.dislikes.length > 0) {
-          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-            usersArray.push(userResults[i]);
-          };
-        }
-
-        if (usersArray) {
-          console.log(usersArray, "usersArray");
-          return res.json({ usersArray });
-        } else {
-          return res.json({ users });
-        };
-      };
     };
 
     if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Lesbian" ) {
 
       const users = await User.find({ gender: "Female", sexualPreference: "Lesbian" });
 
-      userResults = users;
+      filter(currentUser, users, req, res, error);
 
-      for (let i = 0; i < userResults.length; i++) {
-
-        if ( currentUser.likes.map((like) => {like !== userResults[i]._id })) {
-          usersArray.push(userResults[i]);
-        };
-
-        if (currentUser.dislikes.length > 0) {
-          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-            usersArray.push(userResults[i]);
-          };
-        }
-
-
-        if (usersArray) {
-          console.log(usersArray, "usersArray");
-          return res.json({ usersArray });
-        } else {
-          return res.json({ users });
-        };
-      };
     };
 
     if (currentUser.sexualPreference === "Bisexual") {
 
       const users = await User.find();
 
-      userResults = users;
+      filter(currentUser, users, req, res, error);
 
-      for (let i = 0; i < userResults.length; i++) {
-
-       if (currentUser._id === userResults[i]._id ) {
-        usersResults[i].slice();
-       };
-
-        if ( currentUser.likes.map((like) => {like !== userResults[i]._id })) {
-          usersArray.push(userResults[i]);
-        };
-
-        if (currentUser.dislikes.length > 0) {
-          if ( currentUser.dislikes.map((dislike) => { dislike !== userResults[i]._id })) {
-            usersArray.push(userResults[i]);
-          };
-        }
-
-        if (usersArray) {
-          console.log(usersArray, "usersArray");
-          return res.json({ usersArray });
-        } else {
-          return res.json({ users });
-        };
-      };
     };
   })
 );
@@ -462,7 +362,8 @@ router.get( "/user/match/:id", authenticateUser, asyncHandler( async (req, res, 
 updates user account
 */
 
-router.patch("/user/settings/:id",[
+router.patch( "/user/settings/:id",
+  [
     check("firstName")
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('Please provide a value for "firstName"'),
@@ -473,8 +374,8 @@ router.patch("/user/settings/:id",[
       .exists({ checkNull: true, checkFalsy: true })
       .withMessage('Please provide a value for "description"'),
   ],
+  authenticateUser,
   asyncHandler(async (req, res, next) => {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessages = errors.array().map((error) => error.msg);
@@ -483,19 +384,22 @@ router.patch("/user/settings/:id",[
 
     const updateObject = req.body;
 
-    console.log(updateObject)
+    console.log(updateObject);
 
-    await User.findOneAndUpdate({ _id: new ObjectID(req.params.id) }, updateObject , { new: true }, function(error, doc) {
+    await User.findOneAndUpdate(
+      { _id: new ObjectID(req.params.id) },
+      updateObject,
+      { new: true },
+      function (error, doc) {
+        if (error) {
+          return res.json({ success: false, message: error.message });
+        }
 
-      if(error) {
-          return res.json({success: false, message: error.message});
+        res.json({ updateObject });
+
+        return res.status(204).end();
       }
-
-      res.json({ updateObject });
-
-      return res.status(204).end();
-    });
-
+    );
   })
 );
 
@@ -504,132 +408,132 @@ Adds matches to the user
 */
 
 router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
+    const errors = validationResult(req);
 
-  const errors = validationResult(req);
+    const user = await User.findOne({ _id: req.params.id });
 
-  const user = await User.findOne({ _id: req.params.id });
+    if (!errors.isEmpty()) {
+      const errorMessages = errors.array().map((error) => error.msg);
+      return res.status(400).json({ error: errorMessages });
+    }
 
-  if (!errors.isEmpty()) {
-    const errorMessages = errors.array().map((error) => error.msg);
-    return res.status(400).json({ error: errorMessages });
-  }
+    const updateObject = req.body.likes;
+    console.log(updateObject);
 
-  const updateObject = req.body.likes;
-  console.log(updateObject)
+    const likedUser = await User.findOne({ _id: updateObject });
 
-  const likedUser = await User.findOne({ _id: updateObject });
+    if (req.body.likes) {
 
+      await User.findOneAndUpdate( { _id: req.params.id },{ $push: { likes: updateObject._id }});
 
-  if (req.body.likes) {
+      recursive(likedUser, user, req, res, next, error);
 
-    await User.findOneAndUpdate( { _id: req.params.id }, { $push: { likes: updateObject._id } });
-    recursive(likedUser, user)
+    } else if (req.body.dislikes) {
 
-  } else if (req.body.dislikes) {
+      await User.findOneAndUpdate({ _id: req.params.id },{ $push: { dislikes: req.body.dislikes._id }},
 
-    await User.findOneAndUpdate({ _id: req.params.id }, { $push: { dislikes: req.body.dislikes._id } },
+        function (error, doc) {
+          if (error) {
+            return res.json({ success: false, message: err.message });
+          }
 
-      function (error, doc) {
-        if (error) {
-          return res.json({ success: false, message: err.message });
+          res.json({ message: "Nope" });
+
+          return res.status(204).end();
         }
-
-        res.json({ message: "Nope" });
-
-        return res.status(204).end();
-
-      }
-    );
-  }
-
-})
+      );
+    };
+  })
 );
 
 /*
 Unmatch from user
 */
 
-router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, err) => {
+router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, error) => {
+    if (error) {
+      res.status(500).json(error);
+    } else {
+      const user = await User.findOne({ _id: req.params.id });
 
+      await User.findOneAndUpdate(
+        { _id: req.params.id },
+        { $pull: { matches: { _id: new ObjectID(req.body.removeMatch) } } },
+        function (error, data) {
+          console.log(error, data);
+        }
+      );
 
-  if (error) {
-    res.status(500).json(error);
-  } else {
+      await User.findOneAndUpdate(
+        { _id: new ObjectID(req.body.removeMatch) },
+        { $pull: { matches: { _id: new Object(user._id) } } },
+        function (error, data) {
+          console.log(error, data);
+        }
+      );
 
-    
-    const user = await User.findOne({ _id: req.params.id });
-
-    await User.findOneAndUpdate( { _id: req.params.id }, { $pull: { matches: { _id: new ObjectID(req.body.removeMatch) } } }, function(error, data) {
-      console.log(error, data);
-    });
-  
-    await User.findOneAndUpdate( { _id: new ObjectID(req.body.removeMatch) }, { $pull: { matches: { _id: new Object(user._id) } } }, function(error, data) {
-      console.log(error, data);
-    });
-  
-    res.json({message: "Unmatched"})
-  }
-}));
+      res.json({ message: "Unmatched" });
+    }
+  })
+);
 
 /*
 Conversation routes
 */
 
-router.get("/user/conversation/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, error) => {
-  const conversation = await Conversation.find();
-  console.log(conversation , "Conversation");
-  if (error) {
-    res.status(500).json(error);
-  } else {
-    res.status(200).json(conversation);
-  }
-}));
+router.get( "/user/conversation/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, error) => {
+    const conversation = await Conversation.find();
+    console.log(conversation, "Conversation");
+    if (error) {
+      res.status(500).json(error);
+    } else {
+      res.status(200).json(conversation);
+    }
+  })
+);
 
 /*
 Messenger routers
 */
 
 router.post("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, error) => {
-  console.log(req.body, "req.body")
-  const newMessage = new Message(req.body);
-  console.log(newMessage, "new message")
-  if (error) {
-    res.status(500).json(error);
-  } else {
-    const savedMessage = await newMessage.save();
-    res.status(200).json(savedMessage);
-  }
-}));
+    console.log(req.body, "req.body");
+    const newMessage = new Message(req.body);
+    console.log(newMessage, "new message");
+    if (error) {
+      res.status(500).json(error);
+    } else {
+      const savedMessage = await newMessage.save();
+      res.status(200).json(savedMessage);
+    }
+  })
+);
 
-router.get("/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, error) => {
-  const messages = await Message.find({
-    conversationId: req.params.conversationId,
-  });
-  if (error) {
-    res.status(500).json(error);
-  } else {
-    res.status(200).json(messages).end();
-  }
-}));
+router.get( "/user/messenger/:id/:receiverId/:conversationId", asyncHandler(async (req, res, next, error) => {
+    const messages = await Message.find({
+      conversationId: req.params.conversationId,
+    });
+    if (error) {
+      res.status(500).json(error);
+    } else {
+      res.status(200).json(messages).end();
+    }
+  })
+);
 
 /*
 Delete user account
 */
 
-router.delete("/user/delete/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
-    User.findOneAndDelete({ _id: new ObjectID(req.params.id) },
-      (err, User) => {
-        if (!error) {
-          res.json({ msg: "customer deleted", deleted: User });
-        } else {
-          console.log("Error removing :" + error);
-        }
+router.delete("/user/delete/:id",authenticateUser,asyncHandler(async (req, res, next, error) => {
+    User.findOneAndDelete({ _id: new ObjectID(req.params.id) }, (err, User) => {
+      if (!error) {
+        res.json({ msg: "customer deleted", deleted: User });
+      } else {
+        console.log("Error removing :" + error);
       }
-    );
+    });
   })
 );
-
-
-
 
 module.exports = router;

@@ -95,26 +95,25 @@ export default function AccountSettings() {
           label="Description"
           multiline
           rows={6}
+          onChange={(e) => setDescription(e.target.value)}
           defaultValue={description}
           className="Settings-textarea"
         />
         </div>
         <div className="Settings-sub-box">
-          <div className="Left-button">
+          <div className="Settings-left-button">
             <p className="Settings-p">Submit</p>
-            <button type="submit" className="Submit-button">
+       
               <IconButton>
-                <CheckCircleIcon style={{ color: 'white' }} className="Settings-cancel">
-                  <button></button>
-                </CheckCircleIcon>
+                <CheckCircleIcon style={{ color: 'white' }} className="Settings-button"></CheckCircleIcon>
               </IconButton>
-            </button>
+     
           </div>
-          <div className="Right-button">
+          <div className="Settings-right-button">
             <p className="Settings-p">Cancel</p>
             <Link to={`/user/account/${localUser._id}`}>
               <IconButton >
-                <HighlightOffIcon style={{ color: 'white' }} className="Settings-cancel"></HighlightOffIcon>
+                <HighlightOffIcon style={{ color: 'white' }} className="Settings-button"></HighlightOffIcon>
               </IconButton>
             </Link>
           </div>
@@ -123,6 +122,9 @@ export default function AccountSettings() {
           </div>
         </Card>
         </form>
+        <div className="Errors-container">
+          <p className="Errors-p">{errors}</p>
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect, } from "react";
-import {  useHistory } from "react-router";
+import React, { useContext, useState, useEffect } from "react";
+import { useHistory } from "react-router";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { UserContext } from "../Context/UserContext";
 
 import AOS from "aos";
-import "aos/dist/aos.css"; 
+import "aos/dist/aos.css";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -101,6 +101,9 @@ export default function Login() {
               </CardContent>
             </Card>
           </form>
+        </div>
+        <div className="Errors-container">
+          <p className="Errors-p">{errors}</p>
         </div>
       </div>
     </div>

@@ -44,13 +44,13 @@ const App = () => {
   )
 };
 
-export default App
+export default App;
 
 /*
 
 To do Listen - 
 
-  1. Include a MATCH pop up when you get a match.
+  1. Finsh the filter function
 
   2. Rebuild the UI
 

@@ -15,7 +15,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 
 export default function AccountPage() {
-  // Declare a new state variable, which we'll call "count"
+ 
   const { id } = useParams();
 
   const local = localStorage.getItem("user");
@@ -39,10 +39,10 @@ export default function AccountPage() {
       .then((res) => {
         localStorage.setItem("user", JSON.stringify(res.data.user));
       });
-  }, []);
+  }, [id]);
 
   return (
-    <div>
+    <div >
       <Header  />
       <div data-aos="zoom-out" className="Account-page-container">
         <Card className="Account-page-wrapper">

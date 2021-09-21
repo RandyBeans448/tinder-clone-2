@@ -20,7 +20,7 @@ export default function MatchButton({ conversations, person }) {
         setUserConvo(convo);
       }
     }
-  }, []);
+  }, [conversations, person._id]);
 
   return (
     <div data-aos="zoom-out" className="Message-div">

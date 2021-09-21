@@ -77,8 +77,8 @@ export default function CreateAccount() {
           pathname: "/",
         });
       })
-      .catch((error) => setErrors(error.response.data.errors));
-    console.log(errors);
+      .catch((error) => setErrors(error.response.data.error));
+      console.log(errors, "errors");
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -91,10 +91,10 @@ export default function CreateAccount() {
     submit();
   };
 
-  console.log(gender);
-
   return (
     <div>
+    <div>
+       
       <div data-aos="zoom-out" className="Sign-up-div">
         <form onSubmit={handleSubmit}>
           <Card>
@@ -102,6 +102,9 @@ export default function CreateAccount() {
               <Typography gutterBottom variant="h4" component="h1">
                 Create account
               </Typography>
+              <div className="Errors-container">
+         {errors.map(( error, index ) => { return <p key={index} className="Errors-p">{error}</p>})}
+         </div>
               <div className="Sign-up-input-div">
                 <TextField
                   id="firstName"
@@ -258,6 +261,7 @@ export default function CreateAccount() {
           </Card>
         </form>
       </div>
+    </div>
     </div>
   );
 }

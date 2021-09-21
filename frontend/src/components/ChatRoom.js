@@ -3,8 +3,6 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import { format } from "timeago.js";
 
-import CardMedia from "@material-ui/core/CardMedia";
-
 import Header from "./Header";
 
 import Button from "@material-ui/core/Button";
@@ -13,6 +11,9 @@ import IconButton from "@material-ui/core/IconButton";
 
 import { io } from "socket.io-client";
 import axios from "axios";
+
+import AOS from "aos";
+import "aos/dist/aos.css"; 
 
 export default function ChatRoom() {
   const local = localStorage.getItem("user");
@@ -32,6 +33,7 @@ export default function ChatRoom() {
 
   const { receiverId } = useParams();
   const { conversationId } = useParams();
+  console.log(conversationId, "conversation id")
 
   const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
   // console.log(matchDetails)
@@ -68,8 +70,6 @@ export default function ChatRoom() {
 
     setMatchId(receiverId);
 
-    console.log(matchId, "match");
-
     socket.current = io("ws://localhost:7000");
 
     socket.current.on("getMessage", (data) => {
@@ -85,8 +85,6 @@ export default function ChatRoom() {
       console.log(arrivalMessage, "arrivalMessage");
 
       setMessages((prev) => [...prev, arrivalMessage]);
-
-      console.log(messages, "Messages");
 
       callBack();
     });
@@ -170,15 +168,15 @@ export default function ChatRoom() {
   };
 
   return (
-    <div>
+    <div >
       <div>
         <Header />
 
         <p> {errors}</p>
 
-        <div className="Chat-banner">
+        <div data-aos="zoom-out" className="Chat-banner">
           <div>
-            <div>
+            <div data-aos="zoom-out">
               <img
                 alt="profile"
                 className="Chat-img"
@@ -189,7 +187,7 @@ export default function ChatRoom() {
         </div>
 
         <div>
-          <div className="Chat-container"></div>
+          <div data-aos="zoom-out" className="Chat-container"></div>
         </div>
         <div className="Chat-box-wrapper">
           <div className="Chat-box">
@@ -241,7 +239,7 @@ export default function ChatRoom() {
             </div>
           </div>
         </div>
-        <div className="Chat-area-wrapper">
+        <div  className="Chat-area-wrapper">
           <Button size="small" variant="outlined" color="secondary" onClick={unmatch}>
             Unmatch
           </Button>
@@ -251,9 +249,9 @@ export default function ChatRoom() {
             className="Chat-area"
           ></input>
           <button onClick={handleSubmit} className="Chat-send">
-            <IconButton>
+            {/* <IconButton> */}
               <SendIcon></SendIcon>
-            </IconButton>
+            {/* </IconButton> */}
           </button>
         </div>
       </div>

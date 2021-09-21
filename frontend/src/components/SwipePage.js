@@ -21,9 +21,10 @@ import { UserContext } from "../Context/UserContext";
 
 export default function SwipePage() {
   const [results, setResults] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [swipeDirection, setDirection] = useState("");
   const [open, setOpen] = useState(false);
+  const [ resForMatch, setResForMatch ] = useState(false);
 
   const { userState, setUserState } = useContext(UserContext);
 
@@ -45,15 +46,20 @@ export default function SwipePage() {
         },
       })
       .then((res) => {
-        setResults(res.data.usersArray || res.data.users);
-        console.log(res.data.message);
+        setResults(res.data.users);
+        console.log(results)
       });
   }, []);
 
-  console.log(results, "res")
-
   useEffect(() => {
     let timer1 = setTimeout(() => setDirection(""), 1000);
+    return () => {
+      clearTimeout(timer1);
+    };
+  });
+
+  useEffect(() => {
+    let timer1 = setTimeout(() => setResForMatch(false), 1000);
     return () => {
       clearTimeout(timer1);
     };
@@ -63,10 +69,6 @@ export default function SwipePage() {
     () => new Array(results.length).fill(0).map((i) => React.createRef()),
     [results]
   );
-
-  const renderMatchModal = () => {
-    return <MatchModal />;
-  };
 
   const swiped = (direction, person) => {
     alreadyRemoved.push(person);
@@ -92,7 +94,7 @@ export default function SwipePage() {
           setResults(resultRemove);
           setUserState(data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err, "error"));
     } else if (direction === "right") {
       axios
         .patch(
@@ -107,12 +109,14 @@ export default function SwipePage() {
           }
         )
         .then((res) => {
-          if (res) {
-            const data = res.data.updateObject;
+          console.log(res.data, "response data");
+          if (res.data.message === 'Its a match') {
+            setResForMatch(true);
           }
+
         })
         .catch((err) => console.log(err));
-    }
+    };
   };
 
   const swipe = (dir) => {
@@ -137,10 +141,6 @@ export default function SwipePage() {
     }
   };
 
-  const openModal = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -153,10 +153,11 @@ export default function SwipePage() {
     <div>
       <Header />
       <div className="Board">
+      {resForMatch === true ? <MatchModal/> : <div/> }
         {results.length === 0 ? (
           <div>
             <div className="Loading-container">
-              <ClassicSpinner size={60} color="#686769" />
+              <ClassicSpinner size={60} color="#FF0051" />
             </div>
           </div>
         ) : (
@@ -204,12 +205,8 @@ export default function SwipePage() {
           })
         )}
       </div>
-      {swipeDirection === "right" ? <LikedModal></LikedModal> : <div></div>}
-      {swipeDirection === "left" ? (
-        <DislikedModal></DislikedModal>
-      ) : (
-        <div></div>
-      )}
+      {swipeDirection === "right" ? <LikedModal/> : <div/> }
+      {swipeDirection === "left" ?  <DislikedModal/>  : <div/> }
       <div className="Submit-button-wrapper">
         <div className="Submit-button-container">
           <button className="Left-button" onClick={() => swipe("left")}>
@@ -229,6 +226,7 @@ export default function SwipePage() {
                 style={{ color: green[500] }}
                 className="Header-icon"
                 fontSize="large"
+                onClick={() => swipe("right")}
               />
             </IconButton>
           </button>
