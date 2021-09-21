@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 const mongoose = require('mongoose');
-const connection =  "mongodb+srv://BishopTech:HairyToeLetItFlow42069@cluster0.hvrz8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const connection =  "password";
 
 mongoose.connect(connection, {
     useNewUrlParser: true,
