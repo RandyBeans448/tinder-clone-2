@@ -47,7 +47,6 @@ export default function SwipePage() {
       })
       .then((res) => {
         setResults(res.data.users);
-        console.log(results)
       });
   }, []);
 
@@ -59,7 +58,7 @@ export default function SwipePage() {
   });
 
   useEffect(() => {
-    let timer1 = setTimeout(() => setResForMatch(false), 1000);
+    let timer1 = setTimeout(() => setResForMatch(false), 1200);
     return () => {
       clearTimeout(timer1);
     };

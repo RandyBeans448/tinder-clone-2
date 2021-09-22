@@ -33,7 +33,6 @@ export default function ChatRoom() {
 
   const { receiverId } = useParams();
   const { conversationId } = useParams();
-  console.log(conversationId, "conversation id")
 
   const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
   // console.log(matchDetails)
@@ -66,14 +65,12 @@ export default function ChatRoom() {
   }, []);
 
   useEffect(() => {
-    console.log(receiverId);
 
     setMatchId(receiverId);
 
     socket.current = io("ws://localhost:7000");
 
     socket.current.on("getMessage", (data) => {
-      console.log(data);
       const arrMess = {
         sender: data.senderId,
         message: data.message,
@@ -81,8 +78,6 @@ export default function ChatRoom() {
       };
 
       setArrivalMessage(arrMess);
-
-      console.log(arrivalMessage, "arrivalMessage");
 
       setMessages((prev) => [...prev, arrivalMessage]);
 
@@ -123,10 +118,8 @@ export default function ChatRoom() {
         }
       )
       .then((res) => {
-        console.log(res.data);
         const arrMessage = res.data.message;
         setArrivalMessage(arrMessage);
-        console.log(arrivalMessage, "arrmess");
         callBack();
       });
   };
@@ -146,7 +139,6 @@ export default function ChatRoom() {
 
   const unmatch = (event) => {
     event.preventDefault();
-    console.log("Starting");
     axios
       .patch(
         api,

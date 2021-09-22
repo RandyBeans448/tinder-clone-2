@@ -91,22 +91,30 @@ then they are removed from the users array.
 
 const filter = async (currentUser, users, req, res, error) => {
 
+console.log(users, "users before try")
   try {
 
     for (let i = 0; i < currentUser.likes.length; i++) {
-      // for (let k = 0; k < currentUser.dislikes.length; k ++) {
+      for (let k = 0; k < currentUser.dislikes.length; k++) {
         for (let j = 0; j < users.length; j++) {
 
           if ( JSON.stringify(currentUser.likes[i]) === JSON.stringify(users[j]._id) ) {
             
-            let index = users.indexOf(users[j]);
-            console.log(index, "index")
-            users.splice(index);
-  
+            const index = users.indexOf(users[j]);
+            users.splice(index, index);
+
           };
+
+          if ( JSON.stringify(currentUser.dislikes[k]) === JSON.stringify(users[j]._id) ) {
+            
+            const index = users.indexOf(users[j]);
+            users.splice(index, index);
+
+          };
+
         };
       };
-    // };
+    };
 
     return res.json({ users });
     

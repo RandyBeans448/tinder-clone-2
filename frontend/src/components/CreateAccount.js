@@ -78,7 +78,6 @@ export default function CreateAccount() {
         });
       })
       .catch((error) => setErrors(error.response.data.error));
-      console.log(errors, "errors");
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });

@@ -41,7 +41,6 @@ export default function Login() {
         localStorage.setItem("jwt", res.data.accessToken);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setUserState(res.data.user);
-        console.log(userState);
         history.push({
           pathname: `/user/account/${res.data.user._id}`,
         });
