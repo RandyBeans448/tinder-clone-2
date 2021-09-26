@@ -89,39 +89,29 @@ then they are removed from the users array.
 
 */
 
+
+
 const filter = async (currentUser, users, req, res, error) => {
+    try {
+      for (const user of users) {
+  
+        for (const like of currentUser.likes) {
 
-console.log(users, "users before try")
-  try {
+          for (const dislike of currentUser.dislikes) {
+      
+            if (user._id.equals(like) || user._id.equals(dislike)) {
+              const index = users.indexOf(user);
+              users.splice(index, 1);
 
-    for (let i = 0; i < currentUser.likes.length; i++) {
-      for (let k = 0; k < currentUser.dislikes.length; k++) {
-        for (let j = 0; j < users.length; j++) {
-
-          if ( JSON.stringify(currentUser.likes[i]) === JSON.stringify(users[j]._id) ) {
-            
-            const index = users.indexOf(users[j]);
-            users.splice(index, index);
-
+            };
           };
-
-          if ( JSON.stringify(currentUser.dislikes[k]) === JSON.stringify(users[j]._id) ) {
-            
-            const index = users.indexOf(users[j]);
-            users.splice(index, index);
-
-          };
-
         };
       };
-    };
-
-    return res.json({ users });
-    
-  } catch (error) {
-    console.log(error, "error");
-  }
-};
+      return res.json({ users });
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
 
 
 /*

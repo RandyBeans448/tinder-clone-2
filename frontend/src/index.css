@@ -184,6 +184,8 @@ position: relative;
 }
 
 .Submit-button-container {
+  position: relative;
+  z-index: -10;
   display: inline-block;
 }
 
@@ -191,14 +193,15 @@ position: relative;
   display: inline-block;
   background-color: white;
   border: none;
+  cursor: pointer;
   margin-right: 2vh;
-
 }
 
 .Right-button {
   display: inline-block;
   background-color: white;
   border: none;
+  cursor: pointer;
   margin-left: 2vh;
 }
 

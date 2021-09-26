@@ -103,11 +103,9 @@ export default function AccountSettings() {
         <div className="Settings-sub-box">
           <div className="Settings-left-button">
             <p className="Settings-p">Submit</p>
-       
               <IconButton>
                 <CheckCircleIcon style={{ color: 'white' }} className="Settings-button"></CheckCircleIcon>
               </IconButton>
-     
           </div>
           <div className="Settings-right-button">
             <p className="Settings-p">Cancel</p>

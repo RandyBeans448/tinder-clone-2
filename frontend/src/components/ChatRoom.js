@@ -7,12 +7,10 @@ import Header from "./Header";
 
 import Button from "@material-ui/core/Button";
 import SendIcon from "@material-ui/icons/Send";
-import IconButton from "@material-ui/core/IconButton";
 
 import { io } from "socket.io-client";
 import axios from "axios";
 
-import AOS from "aos";
 import "aos/dist/aos.css"; 
 
 export default function ChatRoom() {
@@ -35,8 +33,7 @@ export default function ChatRoom() {
   const { conversationId } = useParams();
 
   const api = `http://localhost:5000/user/messenger/${localUser._id}/${receiverId}/${conversationId}`;
-  // console.log(matchDetails)
-
+  
   const callBack = useCallback(() => {
     const getMessages = async () => {
       axios
@@ -53,8 +50,6 @@ export default function ChatRoom() {
     };
     getMessages();
   }, [api]);
-
-  // console.log(localUser.matches, "local user matches");
 
   useEffect(() => {
     for (let i = 0; i < localUser.matches.length; i++) {
@@ -241,9 +236,7 @@ export default function ChatRoom() {
             className="Chat-area"
           ></input>
           <button onClick={handleSubmit} className="Chat-send">
-            {/* <IconButton> */}
               <SendIcon></SendIcon>
-            {/* </IconButton> */}
           </button>
         </div>
       </div>

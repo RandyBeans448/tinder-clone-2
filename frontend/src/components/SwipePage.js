@@ -28,6 +28,8 @@ export default function SwipePage() {
 
   const { userState, setUserState } = useContext(UserContext);
 
+  console.log(userState)
+
   const { id } = useParams();
 
   const api = `http://localhost:5000/user/match/${id}`;
@@ -152,7 +154,7 @@ export default function SwipePage() {
     <div>
       <Header />
       <div className="Board">
-      {resForMatch === true ? <MatchModal/> : <div/> }
+      {resForMatch === true ? <MatchModal/> : <p/> }
         {results.length === 0 ? (
           <div>
             <div className="Loading-container">
@@ -204,34 +206,23 @@ export default function SwipePage() {
           })
         )}
       </div>
-      {swipeDirection === "right" ? <LikedModal/> : <div/> }
-      {swipeDirection === "left" ?  <DislikedModal/>  : <div/> }
-      <div className="Submit-button-wrapper">
-        <div className="Submit-button-container">
-          <button className="Left-button" onClick={() => swipe("left")}>
-            <IconButton>
+      {swipeDirection === "right" ? <LikedModal/> : <p/> }
+      {swipeDirection === "left" ?  <DislikedModal/>  : <p/> }
+            <IconButton className="Left-button" onClick={() => swipe("left")}>
               <CancelIcon
                 style={{ color: red[500] }}
                 className="Header-icon"
                 fontSize="large"
               />
             </IconButton>
-          </button>
-        </div>
-        <div className="Submit-button-container">
-          <button className="Right-button" onClick={() => swipe("right")}>
-            <IconButton>
+            <IconButton className="Right-button" onClick={() => swipe("right")}> 
               <FavoriteIcon
                 style={{ color: green[500] }}
                 className="Header-icon"
                 fontSize="large"
-                onClick={() => swipe("right")}
               />
             </IconButton>
-          </button>
-        </div>
       </div>
-    </div>
   );
 }
 

@@ -46,7 +46,6 @@ export default function Login() {
         });
       })
       .catch((error) => setErrors(error.response.data.error));
-    console.log(errors);
   };
 
   const handleSubmit = (event) => {
