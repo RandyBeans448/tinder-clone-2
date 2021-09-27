@@ -138,7 +138,7 @@ export default function SwipePage() {
 
       childRefs[index].current.swipe(dir);
 
-      state.pop();
+      state.splice(index, 1);
     }
   };
 
