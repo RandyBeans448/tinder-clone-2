@@ -138,7 +138,7 @@ export default function SwipePage() {
 
       childRefs[index].current.swipe(dir);
 
-      state.splice(index, 1);
+      state.splice(index);
     }
   };
 
@@ -154,7 +154,7 @@ export default function SwipePage() {
     <div>
       <Header />
       <div className="Board">
-      {resForMatch === true ? <MatchModal/> : <p/> }
+      {resForMatch === true ? <MatchModal/> : null }
         {results.length === 0 ? (
           <div>
             <div className="Loading-container">
@@ -206,8 +206,9 @@ export default function SwipePage() {
           })
         )}
       </div>
-      {swipeDirection === "right" ? <LikedModal/> : <p/> }
-      {swipeDirection === "left" ?  <DislikedModal/>  : <p/> }
+      {swipeDirection === "right" ? <LikedModal/> : null }
+      {swipeDirection === "left" ?  <DislikedModal/>  : null }
+      <div className="Swipe-button-container">
             <IconButton className="Left-button" onClick={() => swipe("left")}>
               <CancelIcon
                 style={{ color: red[500] }}
@@ -222,6 +223,7 @@ export default function SwipePage() {
                 fontSize="large"
               />
             </IconButton>
+            </div>
       </div>
   );
 }

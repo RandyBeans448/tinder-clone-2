@@ -36,6 +36,7 @@ mongoose.connect(connection, {
     useCreateIndex: true,
     useUnifiedTopology: true,
     useFindAndModify: false
+    
 });
 
 const userRoutes = require('./routes/userRoutes');
@@ -76,3 +77,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(5000, () => console.log('Listening on port 5000!'))
+
+// module.exports.variableName = "db";

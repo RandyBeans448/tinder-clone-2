@@ -99,31 +99,31 @@ const filter = async (currentUser, users, req, res, error) => {
         for (const user of users) {
           for (const like of currentUser.likes) {
             if (user._id.equals(like)) {
+              console.log(user, "matched user like")
               const index = users.indexOf(user);
               users.splice(index, 1);
-              console.log(users)
+
             }
           }
         }
       }
 
-    else  if (currentUser.dislikes.length > 0)  {
+    if (currentUser.dislikes.length > 0)  {
         console.log("dislikes")
         for (const user of users) {
           for (const like of currentUser.dislikes) {
             if (user._id.equals(like)) {
+              console.log(user, "matched user dislike")
               const index = users.indexOf(user);
               users.splice(index, 1);
               console.log(users)
             }
           }
         }
-      } else {
-        return res.json({ users });
       }
 
  
-      
+      return res.json({ users });
 
     } catch (error) {
       console.log(error, "error");
@@ -139,6 +139,8 @@ router.post( "/login", asyncHandler(async (req, res, error) => {
     const userBody = req.body;
 
     const user = await User.findOne({ emailAddress: req.body.emailAddress });
+
+
 
     if (!user) {
       console.log("There is no account with that email");
@@ -334,6 +336,10 @@ router.get( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, e
     if (currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
 
       const users = await User.find({ gender: "Female", sexualPreference: "Straight"});
+
+      console.log(users, "users")
+
+      // console.log(User.find({ gender: "Female"}).toArray())
 
       filter(currentUser, users, req, res, error);
 
