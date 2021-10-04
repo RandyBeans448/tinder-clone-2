@@ -2,6 +2,8 @@ import React from "react";
 import { Link, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 
+import { Button } from "@material-ui/core";
+
 export default function AccountDelete() {
   // Declare a new state variable, which we'll call "count"
 
@@ -41,7 +43,9 @@ export default function AccountDelete() {
         <p>Are you sure you want to delete your account?</p>
       </div>
       <div>
-        <button onClick={deleteAccount}> Delete </button>
+        <Button onClick={deleteAccount} variant="outlined" color="secondary">
+                    Delete
+                  </Button>
       </div>
       <Link to={`/user/settings/${id}`}> Back to Settings </Link>
     </div>

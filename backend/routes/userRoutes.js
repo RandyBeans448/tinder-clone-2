@@ -38,6 +38,13 @@ const asyncHandler = (callback) => {
   };
 };
 
+
+/*
+Recursive function checks to see if the users that have been swiped on like each other.
+If they have a match is made and the users is then sent "Its a match"
+The modal is then triggered on the frontend
+*/
+
 const recursive = async (match, user, req, res, error, next) => {
 
   const newUser = {
@@ -212,19 +219,23 @@ router.post( "/user/create-account", upload.single("file"),
   ],
   asyncHandler(async (req, res, next) => {
     // Attempt to get the validation result from the Request object.
+    
     const errors = validationResult(req);
 
     // If there are validation errors...
     if (!errors.isEmpty()) {
       // Use the Array `map()` method to get a list of error messages.
       const errorMessages = errors.array().map((error) => error.msg);
+      console.log(req.file, "file")
       console.log(errorMessages, "Error messages");
+     
       // Return the validation errors to the client.
       return res.status(400).json({ error: errorMessages });
     }
 
     const {
       file,
+      path = req.file.path,
       body: {
         firstName,
         lastName,
@@ -236,7 +247,7 @@ router.post( "/user/create-account", upload.single("file"),
         description,
       },
     } = req;
-
+    
     //new user request body using mongo model from schema
     const postUser = new User({
       firstName: firstName,
@@ -248,7 +259,7 @@ router.post( "/user/create-account", upload.single("file"),
       age: age,
       description: description,
       file: file,
-      path: req.file.path,
+      path: path,
     });
 
     const userEmail = await User.findOne({
@@ -336,10 +347,6 @@ router.get( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, e
     if (currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
 
       const users = await User.find({ gender: "Female", sexualPreference: "Straight"});
-
-      console.log(users, "users")
-
-      // console.log(User.find({ gender: "Female"}).toArray())
 
       filter(currentUser, users, req, res, error);
 
@@ -472,6 +479,7 @@ Unmatch from user
 */
 
 router.patch("/user/messenger/:id/:receiverId/:conversationId", authenticateUser, asyncHandler(async (req, res, next, error) => {
+
     if (error) {
       res.status(500).json(error);
     } else {

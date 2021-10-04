@@ -24,7 +24,7 @@ export default function CreateAccount() {
   const [sexualPreference, setSexualPreference] = useState("Straight");
   const [age, setAge] = useState("");
   const [description, setDescription] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(undefined);
   const [errors, setErrors] = useState([]);
 
   const genderOptions = [
@@ -54,6 +54,13 @@ export default function CreateAccount() {
   ];
 
   const submit = () => {
+    console.log(file, "oioi")
+
+    if (file === undefined) {
+      let fileError = "please upload a picture"
+      errors.push(fileError);
+    }
+    
     const data = new FormData();
     data.append("firstName", firstName);
     data.append("lastName", lastName);
@@ -92,7 +99,6 @@ export default function CreateAccount() {
   return (
     <div>
     <div>
-       
       <div data-aos="zoom-out" className="Sign-up-div">
         <form onSubmit={handleSubmit}>
           <Card>
