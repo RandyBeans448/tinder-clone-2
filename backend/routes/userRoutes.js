@@ -235,7 +235,6 @@ router.post( "/user/create-account", upload.single("file"),
 
     const {
       file,
-      path = req.file.path,
       body: {
         firstName,
         lastName,
@@ -247,7 +246,7 @@ router.post( "/user/create-account", upload.single("file"),
         description,
       },
     } = req;
-    
+
     //new user request body using mongo model from schema
     const postUser = new User({
       firstName: firstName,
@@ -259,7 +258,7 @@ router.post( "/user/create-account", upload.single("file"),
       age: age,
       description: description,
       file: file,
-      path: path,
+      path: req.file.path,
     });
 
     const userEmail = await User.findOne({
