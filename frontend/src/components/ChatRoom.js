@@ -161,9 +161,9 @@ export default function ChatRoom() {
 
         <p> {errors}</p>
 
-        <div data-aos="zoom-out" className="Chat-banner">
+        <div  className="Chat-banner">
           <div>
-            <div data-aos="zoom-out">
+            <div >
               <img
                 alt="profile"
                 className="Chat-img"
@@ -174,7 +174,7 @@ export default function ChatRoom() {
         </div>
 
         <div>
-          <div data-aos="zoom-out" className="Chat-container"></div>
+          <div  className="Chat-container"></div>
         </div>
         <div className="Chat-box-wrapper">
           <div className="Chat-box">

@@ -21,6 +21,8 @@ export default function AccountPage() {
   const local = localStorage.getItem("user");
   const localUser = JSON.parse(local);
 
+  console.log(localUser, "local user")
+
   useEffect(() => {
     AOS.init({
       duration: 1500,

@@ -85,58 +85,6 @@ const recursive = async (match, user, req, res, error, next) => {
   }
 }; 
 
-/*
-Filter function
-
-The filter functions takes the current user and loops through the likes and dislikes.
-If the current user has any likes or dislikes that match the users that have been found
-matching the search parameters
-(e.g If the current user is and straight man then the current user will be shown straight women)
-then they are removed from the users array.
-
-*/
-
-
-
-const filter = async (currentUser, users, req, res, error) => {
-
-    try {
-
-      if (currentUser.likes.length > 0) {
-        for (const user of users) {
-          for (const like of currentUser.likes) {
-            if (user._id.equals(like)) {
-              console.log(user, "matched user like")
-              const index = users.indexOf(user);
-              users.splice(index, 1);
-
-            }
-          }
-        }
-      }
-
-    if (currentUser.dislikes.length > 0)  {
-        console.log("dislikes")
-        for (const user of users) {
-          for (const like of currentUser.dislikes) {
-            if (user._id.equals(like)) {
-              console.log(user, "matched user dislike")
-              const index = users.indexOf(user);
-              users.splice(index, 1);
-              console.log(users)
-            }
-          }
-        }
-      }
-
- 
-      return res.json({ users });
-
-    } catch (error) {
-      console.log(error, "error");
-    }
-  };
-
 
 /*
 Login account
@@ -345,41 +293,41 @@ router.get( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, e
 
     if (currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
 
-      const users = await User.find({ gender: "Female", sexualPreference: "Straight"});
+      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Female", sexualPreference: "Straight"});
 
-      filter(currentUser, users, req, res, error);
+      return res.json({ users });
 
     };
 
     if (currentUser.gender === "Male" && currentUser.sexualPreference === "Gay") {
 
-      const users = await User.find({ gender: "Male", sexualPreference: "Gay" });
+      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Male", sexualPreference: "Gay" });
 
-      filter(currentUser, users, req, res, error);
+      return res.json({ users });
 
     };
 
     if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Straight" ) {
 
-      const users = await User.find({ gender: "Male", sexualPreference: "Straight" });
+      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Male", sexualPreference: "Straight"});
 
-      filter(currentUser, users, req, res, error);
+      return res.json({ users });
 
     };
 
     if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Lesbian" ) {
 
-      const users = await User.find({ gender: "Female", sexualPreference: "Lesbian" });
+      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Female", sexualPreference: "Lesbian" });
 
-      filter(currentUser, users, req, res, error);
+      return res.json({ users });
 
     };
 
     if (currentUser.sexualPreference === "Bisexual") {
 
-      const users = await User.find();
+      const users = await User.find({_id: { $nin: [ currentUser.likes, currentUser.dislikes ] }});
 
-      filter(currentUser, users, req, res, error);
+      return res.json({ users });
 
     };
   })
