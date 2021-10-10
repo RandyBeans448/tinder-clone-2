@@ -120,6 +120,7 @@ export default function ChatRoom() {
   };
 
   const handleSubmit = (event) => {
+    event.target.value = null;
     event.preventDefault();
     submit();
     socket.current.emit("sendMessage", {
@@ -133,6 +134,7 @@ export default function ChatRoom() {
   };
 
   const unmatch = (event) => {
+    
     event.preventDefault();
     axios
       .patch(
@@ -156,11 +158,9 @@ export default function ChatRoom() {
 
   return (
     <div >
-      <div>
         <Header />
-
+      <div >
         <p> {errors}</p>
-
         <div  className="Chat-banner">
           <div>
             <div >
@@ -172,11 +172,10 @@ export default function ChatRoom() {
             </div>
           </div>
         </div>
-
         <div>
           <div  className="Chat-container"></div>
         </div>
-        <div className="Chat-box-wrapper">
+        <div  className="Chat-box-wrapper">
           <div className="Chat-box">
             <div className="Chat-messages-wrapper">
               {!messages ? (
@@ -226,6 +225,7 @@ export default function ChatRoom() {
             </div>
           </div>
         </div>
+        <form>
         <div  className="Chat-area-wrapper">
           <Button size="small" variant="outlined" color="secondary" onClick={unmatch}>
             Unmatch
@@ -235,10 +235,11 @@ export default function ChatRoom() {
             value={newMessage}
             className="Chat-area"
           ></input>
-          <button onClick={handleSubmit} className="Chat-send">
+          <button type="submit" onClick={(event) => handleSubmit} className="Chat-send">
               <SendIcon></SendIcon>
           </button>
         </div>
+        </form>
       </div>
     </div>
   );
