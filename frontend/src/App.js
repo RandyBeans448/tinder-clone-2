@@ -45,13 +45,3 @@ const App = () => {
 };
 
 export default App;
-
-/*
-
-To do Listen - 
-
-  1. Finsh the filter function
-
-  2. Rebuild the UI
-
-*/

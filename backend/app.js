@@ -17,6 +17,7 @@ const corsOptions ={
   optionSuccessStatus:200
 }
 
+
 app.use('*',cors(corsOptions));
 
 app.use(bodyParser.json({limit: '1000kb'}));

@@ -26,6 +26,7 @@ export default function CreateAccount() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(undefined);
   const [errors, setErrors] = useState([]);
+  const [fileErrorState, setFileError] = useState()
 
   const genderOptions = [
     {
@@ -56,10 +57,7 @@ export default function CreateAccount() {
   const submit = () => {
     console.log(file, "oioi")
 
-    if (file === undefined) {
-      let fileError = "please upload a picture"
-      errors.push(fileError);
-    }
+
     
     const data = new FormData();
     data.append("firstName", firstName);
@@ -93,6 +91,10 @@ export default function CreateAccount() {
     if (errors) {
       scrollToTop();
     }
+    if (file === undefined) {
+      let fileError = "please upload a picture"
+      setFileError(fileError);
+    }
     submit();
   };
 
@@ -107,6 +109,7 @@ export default function CreateAccount() {
                 Create account
               </Typography>
               <div className="Errors-container">
+                <p className="Errors-p">{fileErrorState}</p>
          {errors.map(( error, index ) => { return <p key={index} className="Errors-p">{error}</p>})}
          </div>
               <div className="Sign-up-input-div">
