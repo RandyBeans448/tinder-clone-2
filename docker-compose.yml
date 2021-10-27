@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  frontend:
+    image: tinder-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    command: npm start
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+    networks:
+      - tinder
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - socket
+  backend:
+    image: tinder-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    command: npm start
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend:/app
+    networks:
+      - tinder
+    restart: unless-stopped
+  socket:
+    image: tinder-socket
+    build:
+      context: ./socket
+      dockerfile: Dockerfile
+      target: dev
+    command: npm start
+    ports:
+      - '7000:7000'
+    volumes:
+      - ./socket:/app
+    networks:
+      - tinder
+    restart: unless-stopped
+
+networks:
+  tinder:

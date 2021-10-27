@@ -10,8 +10,8 @@ const { check, validationResult } = require("express-validator");
 const multer = require("multer");
 
 const User = require("../models/userSchema");
-const Conversation = require("../models/conversationsSchema");
-const Message = require("../models/messageSchema");
+const Conversation = require("../models/ConversationsSchema");
+const Message = require("../models/MessageSchema");
 
 const ObjectID = require("mongodb").ObjectID;
 const { json } = require("body-parser");
@@ -63,11 +63,11 @@ const recursive = async (match, user, req, res, error, next) => {
     for (const like of match.likes) {
 
       console.log(like, 'like._id');
-      
+
       if ( user._id.equals(like) ) {
-  
+
         await User.findOneAndUpdate({ _id: user._id }, { $push: { matches: newMatch } });
-    
+
         await User.findOneAndUpdate({ _id: match._id }, { $push: { matches: newUser } });
 
         const newConversation = new Conversation({ members: [user._id, match._id] });
@@ -75,15 +75,15 @@ const recursive = async (match, user, req, res, error, next) => {
         await newConversation.save();
 
         console.log("match");
-   
+
         return res.json({ message: 'Its a match' }).end();
-    
+
       }
     };
   } catch(error) {
     res.status(500).json(error);
   }
-}; 
+};
 
 
 /*
@@ -167,7 +167,7 @@ router.post( "/user/create-account", upload.single("file"),
   ],
   asyncHandler(async (req, res, next) => {
     // Attempt to get the validation result from the Request object.
-    
+
     const errors = validationResult(req);
 
     // If there are validation errors...
@@ -176,7 +176,7 @@ router.post( "/user/create-account", upload.single("file"),
       const errorMessages = errors.array().map((error) => error.msg);
       console.log(req.file, "file")
       console.log(errorMessages, "Error messages");
-     
+
       // Return the validation errors to the client.
       return res.status(400).json({ error: errorMessages });
     }
@@ -379,7 +379,7 @@ router.patch( "/user/settings/:id",
 );
 
 /*
-Adds matches to the user 
+Adds matches to the user
 */
 
 router.patch( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, next, error) => {
