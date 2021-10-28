@@ -15,6 +15,7 @@ const Message = require("../models/MessageSchema");
 
 const ObjectID = require("mongodb").ObjectID;
 const { json } = require("body-parser");
+const {handleMatchRoute} = require("../src/match");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -287,51 +288,7 @@ router.get( "/user/account/:id", authenticateUser, asyncHandler(async (req, res,
 Gets other users for swiping
 */
 
-router.get( "/user/match/:id", authenticateUser, asyncHandler(async (req, res, error) => {
-
-    const currentUser = await User.findOne({ _id: req.params.id });
-
-    if (currentUser.gender === "Male" && currentUser.sexualPreference === "Straight") {
-
-      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Female", sexualPreference: "Straight"});
-
-      return res.json({ users });
-
-    };
-
-    if (currentUser.gender === "Male" && currentUser.sexualPreference === "Gay") {
-
-      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Male", sexualPreference: "Gay" });
-
-      return res.json({ users });
-
-    };
-
-    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Straight" ) {
-
-      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Male", sexualPreference: "Straight"});
-
-      return res.json({ users });
-
-    };
-
-    if ( currentUser.gender === "Female" && currentUser.sexualPreference === "Lesbian" ) {
-
-      const users = await User.find({ _id: { $nin: [ currentUser.likes, currentUser.dislikes ] }, gender: "Female", sexualPreference: "Lesbian" });
-
-      return res.json({ users });
-
-    };
-
-    if (currentUser.sexualPreference === "Bisexual") {
-
-      const users = await User.find({_id: { $nin: [ currentUser.likes, currentUser.dislikes ] }});
-
-      return res.json({ users });
-
-    };
-  })
-);
+router.get("/user/match/:id", authenticateUser, asyncHandler(handleMatchRoute));
 
 /*
 updates user account
